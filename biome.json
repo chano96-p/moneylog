@@ -13,7 +13,9 @@
       "!.next",
       "!dist",
       "!build",
-      "!src/components/ui/*"
+      "!src/components/ui",
+      "!src/app/globals.css",
+      "!public"
     ]
   },
   "formatter": {
