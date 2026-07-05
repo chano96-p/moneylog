@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { signOut } from "@/lib/actions/auth";
 import { Icon } from "./icon";
 
 const NAV_ITEMS = [
@@ -51,6 +52,16 @@ export function Sidebar() {
           );
         })}
       </nav>
+
+      <form action={signOut} className="mt-auto p-3">
+        <button
+          type="submit"
+          className="flex cursor-pointer w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[15px] font-semibold text-muted-foreground transition-colors hover:bg-secondary hover:text-sidebar-foreground"
+        >
+          <Icon name="logout" size={22} />
+          로그아웃
+        </button>
+      </form>
     </aside>
   );
 }
