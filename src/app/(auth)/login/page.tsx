@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useState } from "react";
-import { Icon } from "@/components/icon";
-import { IconInput } from "@/components/icon-input";
-import { PasswordInput } from "@/components/password-input";
+import { IconInput } from "@/components/auth/icon-input";
+import { PasswordInput } from "@/components/auth/password-input";
+import { Icon } from "@/components/common/icon";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";

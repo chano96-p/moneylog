@@ -20,3 +20,7 @@ export type Category = {
   type: TransactionType;
   created_at: string;
 };
+
+export type TransactionWithCategory = Transaction & {
+  category: Pick<Category, "name" | "icon" | "color"> | null;
+};

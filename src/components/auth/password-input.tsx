@@ -1,8 +1,8 @@
 "use client";
 
 import { type ComponentProps, useState } from "react";
-import { Icon } from "@/components/icon";
-import { IconInput } from "@/components/icon-input";
+import { Icon } from "@/components/common/icon";
+import { IconInput } from "./icon-input";
 
 type PasswordInputProps = Omit<
   ComponentProps<typeof IconInput>,

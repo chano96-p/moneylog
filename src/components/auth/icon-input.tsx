@@ -1,6 +1,6 @@
 import type { ComponentProps } from "react";
 import { cn } from "@/lib/utils";
-import { Icon } from "./icon";
+import { Icon } from "../common/icon";
 
 type IconInputProps = ComponentProps<"input"> & {
   icon: string; // 좌측 Material Symbol 이름
