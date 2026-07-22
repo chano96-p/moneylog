@@ -12,3 +12,5 @@ export const AMOUNT_COLOR: Record<TransactionType, string> = {
   expense: "text-foreground",
   income: "text-income",
 };
+
+export const MAX_TRANSACTION_AMOUNT = 999_999_999;
