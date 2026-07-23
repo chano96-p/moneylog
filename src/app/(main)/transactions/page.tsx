@@ -1,6 +1,6 @@
 import { EmptyState } from "@/components/common/empty-state";
-import { TransactionFormModal } from "@/components/transactions/transaction-form-modal";
-import { TransactionGroup } from "@/components/transactions/transaction-group";
+import { AddTransactionButton } from "@/components/transactions/add-transaction-button";
+import { TransactionList } from "@/components/transactions/transaction-list";
 import { getCategories } from "@/lib/queries/categories";
 import { getTransactions } from "@/lib/queries/transactions";
 import type { TransactionWithCategory } from "@/lib/types";
@@ -32,7 +32,7 @@ export default async function TransactionsPage() {
         <h1 className="text-[22px] font-extrabold text-foreground">
           거래 내역
         </h1>
-        <TransactionFormModal categories={categories} />
+        <AddTransactionButton categories={categories} />
       </div>
 
       <div className="rounded-2xl bg-card px-6 pb-2 shadow-card">
@@ -43,9 +43,7 @@ export default async function TransactionsPage() {
             description="첫 거래를 입력하면 여기에 표시돼요."
           />
         ) : (
-          groups.map(([date, txs]) => (
-            <TransactionGroup key={date} date={date} transactions={txs} />
-          ))
+          <TransactionList groups={groups} categories={categories} />
         )}
       </div>
     </div>

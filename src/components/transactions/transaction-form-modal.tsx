@@ -2,63 +2,74 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-import { createTransaction } from "@/lib/actions/transactions";
+import {
+  createTransaction,
+  deleteTransaction,
+  updateTransaction,
+} from "@/lib/actions/transactions";
 import {
   MAX_TRANSACTION_AMOUNT,
   TRANSACTION_TYPE_LABEL,
   TRANSACTION_TYPES,
 } from "@/lib/constants";
 import { formatAmount, today } from "@/lib/format";
-import { transactionInputSchema } from "@/lib/schemas";
-import type { Category, TransactionType } from "@/lib/types";
+import {
+  type TransactionInput,
+  type TransactionUpdateInput,
+  transactionInputSchema,
+  transactionUpdateSchema,
+} from "@/lib/schemas";
+import type {
+  Category,
+  TransactionType,
+  TransactionWithCategory,
+} from "@/lib/types";
 import { DateField } from "../common/date-field";
 import { Icon } from "../common/icon";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogTrigger,
-} from "../ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "../ui/dialog";
 
 type TransactionFormModalProps = {
   categories: Category[];
+  transaction?: TransactionWithCategory; // 있으면 수정 모드
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 };
 
 export function TransactionFormModal({
   categories,
+  transaction,
+  open,
+  onOpenChange,
 }: TransactionFormModalProps) {
-  const [open, setOpen] = useState(false);
-  const [pending, setPending] = useState(false);
+  const isEdit = !!transaction;
 
-  const [type, setType] = useState<TransactionType>("expense");
-  const [categoryId, setCategoryId] = useState("");
-  const [amount, setAmount] = useState("");
-  const [date, setDate] = useState(today());
-  const [memo, setMemo] = useState("");
+  const [pending, setPending] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+
+  const [type, setType] = useState<TransactionType>(
+    transaction?.type ?? "expense",
+  );
+  const [categoryId, setCategoryId] = useState(transaction?.category_id ?? "");
+  const [amount, setAmount] = useState(
+    transaction ? String(transaction.amount) : "",
+  );
+  const [date, setDate] = useState(transaction?.date ?? today());
+  const [memo, setMemo] = useState(transaction?.memo ?? "");
 
   const visibleCategories = categories.filter((c) => c.type === type);
 
-  function reset() {
-    setType("expense");
-    setCategoryId("");
-    setAmount("");
-    setDate(today());
-    setMemo("");
-  }
-
-  function handleOpenChange(next: boolean) {
-    if (!next) reset();
-    setOpen(next);
-  }
-
   async function handleSubmit() {
-    const parsed = transactionInputSchema.safeParse({
+    const base = {
       type,
       category_id: categoryId || null,
       amount: Number(amount),
       date,
       memo: memo.trim() || null,
-    });
+    };
+
+    const parsed = isEdit
+      ? transactionUpdateSchema.safeParse({ ...base, id: transaction.id })
+      : transactionInputSchema.safeParse(base);
 
     if (!parsed.success) {
       toast.error(parsed.error.issues[0].message);
@@ -67,10 +78,14 @@ export function TransactionFormModal({
 
     setPending(true);
     try {
-      await createTransaction(parsed.data);
-      toast.success("거래를 추가했어요.");
-      setOpen(false);
-      reset();
+      if (isEdit) {
+        await updateTransaction(parsed.data as TransactionUpdateInput);
+        toast.success("거래를 수정했어요.");
+      } else {
+        await createTransaction(parsed.data as TransactionInput);
+        toast.success("거래를 추가했어요.");
+      }
+      onOpenChange(false);
     } catch (e) {
       toast.error(
         e instanceof Error ? e.message : "잠시 후 다시 시도해 주세요.",
@@ -80,31 +95,46 @@ export function TransactionFormModal({
     }
   }
 
-  return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        <button
-          type="button"
-          className="flex cursor-pointer items-center gap-1.5 rounded-[12px] bg-primary px-4 py-2.5 text-[14px] font-bold text-primary-foreground"
-        >
-          <Icon name="add" size={18} />
-          거래 추가
-        </button>
-      </DialogTrigger>
+  async function handleDelete() {
+    if (!transaction) return;
+    if (!confirmingDelete) {
+      setConfirmingDelete(true);
+      return;
+    }
+    setPending(true);
+    try {
+      await deleteTransaction(transaction.id);
+      toast.success("거래를 삭제했어요.");
+      onOpenChange(false);
+    } catch (e) {
+      toast.error(
+        e instanceof Error ? e.message : "잠시 후 다시 시도해 주세요.",
+      );
+    } finally {
+      setPending(false);
+    }
+  }
 
+  function disarmDelete() {
+    if (confirmingDelete) setConfirmingDelete(false);
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
+        onClick={disarmDelete}
         showCloseButton={false}
         className="w-120 max-w-[calc(100%-2rem)] gap-5.5 rounded-3xl border-0 p-7 shadow-modal"
       >
         {/* 헤더 */}
         <div className="flex items-center justify-between">
           <DialogTitle className="text-[19px] font-extrabold text-foreground">
-            거래 추가
+            {isEdit ? "거래 수정" : "거래 추가"}
           </DialogTitle>
           <button
             type="button"
             aria-label="닫기"
-            onClick={() => handleOpenChange(false)}
+            onClick={() => onOpenChange(false)}
             className="flex size-8.5 cursor-pointer items-center justify-center rounded-[10px] bg-secondary"
           >
             <Icon name="close" size={20} color="var(--gray-500)" />
@@ -223,14 +253,42 @@ export function TransactionFormModal({
         </div>
 
         {/* 저장 */}
-        <button
-          type="button"
-          onClick={handleSubmit}
-          disabled={pending}
-          className="w-full cursor-pointer rounded-lg bg-primary pt-4.25 pb-3.75 text-[15px] font-bold text-primary-foreground disabled:opacity-60"
-        >
-          {pending ? "저장 중..." : "저장하기"}
-        </button>
+        {isEdit ? (
+          <div className="grid grid-cols-3 gap-2">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDelete();
+              }}
+              disabled={pending}
+              className={`cursor-pointer rounded-lg pt-4.25 pb-3.75 text-[15px] font-bold transition disabled:opacity-60 ${
+                confirmingDelete
+                  ? "bg-expense text-white"
+                  : "bg-expense-bg text-expense"
+              }`}
+            >
+              {confirmingDelete ? "정말 삭제" : "삭제"}
+            </button>
+            <button
+              type="button"
+              onClick={handleSubmit}
+              disabled={pending}
+              className="col-span-2 cursor-pointer rounded-lg bg-primary pt-4.25 pb-3.75 text-[15px] font-bold text-primary-foreground disabled:opacity-60"
+            >
+              {pending ? "저장 중..." : "저장하기"}
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={handleSubmit}
+            disabled={pending}
+            className="w-full cursor-pointer rounded-lg bg-primary pt-4.25 pb-3.75 text-[15px] font-bold text-primary-foreground disabled:opacity-60"
+          >
+            {pending ? "저장 중..." : "저장하기"}
+          </button>
+        )}
       </DialogContent>
     </Dialog>
   );

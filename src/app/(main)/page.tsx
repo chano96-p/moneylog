@@ -1,6 +1,6 @@
 export default function DashboardPage() {
   return (
-    <div className="p-8">
+    <div>
       <h1 className="text-2xl font-bold text-foreground">안녕하세요 👋</h1>
       <p className="mt-1 text-muted-foreground">
         6월 가계부를 한눈에 확인해 보세요.

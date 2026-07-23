@@ -32,7 +32,7 @@ export function DateField({
       <button
         type="button"
         onClick={() => handleOpenChange(true)}
-        className="flex w-full items-center justify-between rounded-[12px] bg-background px-3.5 py-3.25"
+        className="flex w-full cursor-pointer items-center justify-between rounded-[12px] bg-background px-3.5 py-3.25"
       >
         <span className="text-[14px] font-semibold text-foreground">
           {formatDate(value)}

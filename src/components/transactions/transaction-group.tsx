@@ -5,11 +5,13 @@ import { TransactionRow } from "./transaction-row";
 type TransactionGroupProps = {
   date: string;
   transactions: TransactionWithCategory[];
+  onSelect: (tx: TransactionWithCategory) => void;
 };
 
 export function TransactionGroup({
   date,
   transactions,
+  onSelect,
 }: TransactionGroupProps) {
   const total = transactions.reduce(
     (sum, tx) => sum + (tx.type === "income" ? tx.amount : -tx.amount),
@@ -38,7 +40,7 @@ export function TransactionGroup({
 
       <ul>
         {transactions.map((tx) => (
-          <TransactionRow key={tx.id} transaction={tx} />
+          <TransactionRow key={tx.id} transaction={tx} onSelect={onSelect} />
         ))}
       </ul>
     </div>
