@@ -1,8 +1,12 @@
 import { EmptyState } from "@/components/common/empty-state";
 import { AddTransactionButton } from "@/components/transactions/add-transaction-button";
+import { MonthSelect } from "@/components/transactions/month-select";
+import { SummaryCards } from "@/components/transactions/summary-cards";
 import { TransactionList } from "@/components/transactions/transaction-list";
+import { TypeTabs } from "@/components/transactions/type-tabs";
+import { currentMonthKST } from "@/lib/format";
 import { getCategories } from "@/lib/queries/categories";
-import { getTransactions } from "@/lib/queries/transactions";
+import { getTransactionsByMonth } from "@/lib/queries/transactions";
 import type { TransactionWithCategory } from "@/lib/types";
 
 /**
@@ -18,13 +22,29 @@ function groupByDate(transactions: TransactionWithCategory[]) {
   return [...map]; // 이미 date DESC 정렬돼서 옴 → Map이 삽입 순서 유지
 }
 
-export default async function TransactionsPage() {
-  const [transactions, categories] = await Promise.all([
-    getTransactions(),
+export default async function TransactionsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ month?: string; type?: string }>;
+}) {
+  const params = await searchParams;
+
+  // 검증: 형식이 어긋나면 기본값으로 (URL은 사용자 입력이다)
+  const month = /^\d{4}-(0[1-9]|1[0-2])$/.test(params.month ?? "")
+    ? (params.month as string)
+    : currentMonthKST();
+  const type =
+    params.type === "income" || params.type === "expense" ? params.type : null;
+
+  const [monthTransactions, categories] = await Promise.all([
+    getTransactionsByMonth(month),
     getCategories(),
   ]);
 
-  const groups = groupByDate(transactions);
+  const filtered = type
+    ? monthTransactions.filter((tx) => tx.type === type)
+    : monthTransactions;
+  const groups = groupByDate(filtered);
 
   return (
     <div className="space-y-5">
@@ -33,6 +53,13 @@ export default async function TransactionsPage() {
           거래 내역
         </h1>
         <AddTransactionButton categories={categories} />
+      </div>
+
+      <SummaryCards transactions={monthTransactions} />
+
+      <div className="flex items-center justify-between">
+        <TypeTabs />
+        <MonthSelect month={month} />
       </div>
 
       <div className="rounded-2xl bg-card px-6 pb-2 shadow-card">

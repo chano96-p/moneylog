@@ -1,14 +1,22 @@
 import { format, isToday, isYesterday, parse } from "date-fns";
 import { ko } from "date-fns/locale";
 
+/** 이 앱의 '오늘'은 항상 KST 기준이다 (서버/클라이언트 무관) */
+export function todayKST() {
+  // sv-SE 로케일 = ISO 형식(YYYY-MM-DD), timeZone으로 KST 고정
+  return new Intl.DateTimeFormat("sv-SE", {
+    timeZone: "Asia/Seoul",
+  }).format(new Date());
+}
+
+/** 'YYYY-MM' (KST 기준 이번 달) */
+export function currentMonthKST() {
+  return todayKST().slice(0, 7);
+}
+
 /** 1234567 → '1,234,567' — 통화 기호 없이 천 단위 구분만 (기호는 호출부에서 조합) */
 export function formatAmount(amount: number) {
   return new Intl.NumberFormat("ko-KR").format(amount);
-}
-
-/** 오늘 날짜를 'YYYY-MM-DD' 형식으로 반환 */
-export function today() {
-  return new Date().toLocaleDateString("sv-SE"); // 'YYYY-MM-DD' 로컬 기준
 }
 
 /** 'YYYY-MM-DD' → Date (타임존 밀림 없음) */

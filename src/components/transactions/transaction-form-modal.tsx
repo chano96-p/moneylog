@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import {
   createTransaction,
   deleteTransaction,
@@ -12,7 +13,7 @@ import {
   TRANSACTION_TYPE_LABEL,
   TRANSACTION_TYPES,
 } from "@/lib/constants";
-import { formatAmount, today } from "@/lib/format";
+import { formatAmount, todayKST } from "@/lib/format";
 import {
   type TransactionInput,
   type TransactionUpdateInput,
@@ -26,7 +27,6 @@ import type {
 } from "@/lib/types";
 import { DateField } from "../common/date-field";
 import { Icon } from "../common/icon";
-import { Dialog, DialogContent, DialogTitle } from "../ui/dialog";
 
 type TransactionFormModalProps = {
   categories: Category[];
@@ -53,7 +53,7 @@ export function TransactionFormModal({
   const [amount, setAmount] = useState(
     transaction ? String(transaction.amount) : "",
   );
-  const [date, setDate] = useState(transaction?.date ?? today());
+  const [date, setDate] = useState(transaction?.date ?? todayKST());
   const [memo, setMemo] = useState(transaction?.memo ?? "");
 
   const visibleCategories = categories.filter((c) => c.type === type);
