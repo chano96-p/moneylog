@@ -125,7 +125,13 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      monthly_expense_totals: {
+        Args: { start_month: string };
+        Returns: {
+          month: string;
+          total: number;
+        }[];
+      };
     };
     Enums: {
       [_ in never]: never;
