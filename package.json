@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "biome check",
-    "format": "biome format --write"
+    "format": "biome format --write",
+    "gen:types": "supabase gen types typescript --linked > src/lib/database.types.ts && biome format --write src/lib/database.types.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.0",
@@ -33,6 +34,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "supabase": "^2.110.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

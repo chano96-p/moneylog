@@ -1,25 +1,18 @@
+import type { Database } from "@/lib/database.types";
+
 export type TransactionType = "income" | "expense";
 
-export type Transaction = {
-  id: string;
-  user_id: string;
-  category_id: string | null;
-  type: TransactionType;
-  amount: number;
-  date: string; // 'YYYY-MM-DD'
-  memo: string | null;
-  created_at: string;
-};
+export type Transaction = Omit<
+  Database["public"]["Tables"]["transactions"]["Row"],
+  "type"
+> & { type: TransactionType };
 
-export type Category = {
-  id: string;
-  user_id: string;
-  name: string;
-  icon: string;
-  color: string;
-  type: TransactionType;
-  created_at: string;
-};
+export type Category = Omit<
+  Database["public"]["Tables"]["categories"]["Row"],
+  "type"
+> & { type: TransactionType };
+
+export type Budget = Database["public"]["Tables"]["budgets"]["Row"];
 
 export type TransactionWithCategory = Transaction & {
   category: Pick<Category, "name" | "icon" | "color"> | null;
