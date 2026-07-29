@@ -1,15 +1,70 @@
-export default function DashboardPage() {
+import { format, parse } from "date-fns";
+import { ko } from "date-fns/locale";
+import { HeroCard } from "@/components/dashboard/hero-card";
+import { MonthNav } from "@/components/dashboard/month-nav";
+import { AddTransactionButton } from "@/components/transactions/add-transaction-button";
+import { parseMonthParam } from "@/lib/format";
+import { getCategories } from "@/lib/queries/categories";
+import {
+  getMonthlyExpenseTotals,
+  getTransactionsByMonth,
+} from "@/lib/queries/transactions";
+import { createClient } from "@/lib/supabase/server";
+
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ month?: string }>;
+}) {
+  const params = await searchParams;
+  const month = parseMonthParam(params.month);
+
+  const supabase = await createClient();
+  const [
+    {
+      data: { user },
+    },
+    monthTransactions,
+    monthlyTotals,
+    categories,
+  ] = await Promise.all([
+    supabase.auth.getUser(),
+    getTransactionsByMonth(month),
+    getMonthlyExpenseTotals(12, month),
+    getCategories(),
+  ]);
+
+  const name = (user?.user_metadata.name as string | undefined) ?? "회원";
+  const monthLabel = format(parse(month, "yyyy-MM", new Date()), "M월", {
+    locale: ko,
+  });
+
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-foreground">안녕하세요 👋</h1>
-      <p className="mt-1 text-muted-foreground">
-        6월 가계부를 한눈에 확인해 보세요.
-      </p>
-      <div className="mt-6 rounded-2xl bg-card p-6 shadow-card">
-        <p className="text-muted-foreground">
-          여기에 대시보드가 들어갑니다. (Phase 3)
-        </p>
+    <div className="space-y-5">
+      {/* 헤더 */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-[22px] font-extrabold text-foreground">
+            안녕하세요, {name}님 👋
+          </h1>
+          <p className="mt-1 text-[14px] text-muted-foreground">
+            {monthLabel} 가계부를 한눈에 확인해 보세요
+          </p>
+        </div>
+        <div className="flex items-center gap-2.5">
+          <MonthNav month={month} />
+          <AddTransactionButton categories={categories} />
+        </div>
       </div>
+
+      <HeroCard
+        month={month}
+        transactions={monthTransactions}
+        monthlyTotals={monthlyTotals}
+      />
+
+      {/* Step 3: 카테고리 도넛 + 최근 거래 (2열) */}
+      {/* Step 5: 월별 추이 */}
     </div>
   );
 }

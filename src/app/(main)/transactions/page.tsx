@@ -4,7 +4,7 @@ import { MonthSelect } from "@/components/transactions/month-select";
 import { SummaryCards } from "@/components/transactions/summary-cards";
 import { TransactionList } from "@/components/transactions/transaction-list";
 import { TypeTabs } from "@/components/transactions/type-tabs";
-import { currentMonthKST } from "@/lib/format";
+import { parseMonthParam } from "@/lib/format";
 import { getCategories } from "@/lib/queries/categories";
 import { getTransactionsByMonth } from "@/lib/queries/transactions";
 import type { TransactionWithCategory } from "@/lib/types";
@@ -30,9 +30,7 @@ export default async function TransactionsPage({
   const params = await searchParams;
 
   // 검증: 형식이 어긋나면 기본값으로 (URL은 사용자 입력이다)
-  const month = /^\d{4}-(0[1-9]|1[0-2])$/.test(params.month ?? "")
-    ? (params.month as string)
-    : currentMonthKST();
+  const month = parseMonthParam(params.month);
   const type =
     params.type === "income" || params.type === "expense" ? params.type : null;
 

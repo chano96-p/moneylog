@@ -10,14 +10,17 @@ export type MonthlyTotal = { month: string; total: number };
 /** 최근 N개월 지출 합계 — 빈 달은 0으로 채워 항상 N개를 반환 */
 export async function getMonthlyExpenseTotals(
   count = 12,
+  baseMonth?: string,
 ): Promise<MonthlyTotal[]> {
-  const current = parse(currentMonthKST(), "yyyy-MM", new Date());
-  const startMonth = format(subMonths(current, count - 1), "yyyy-MM");
+  const base = parse(baseMonth ?? currentMonthKST(), "yyyy-MM", new Date());
+  const startMonth = format(subMonths(base, count - 1), "yyyy-MM");
+  const endMonth = format(base, "yyyy-MM");
 
   const supabase = await createClient();
 
   const { data, error } = await supabase.rpc("monthly_expense_totals", {
     start_month: startMonth,
+    end_month: endMonth,
   });
 
   if (error) throw new Error("월별 지출을 불러오지 못했어요.");
@@ -26,7 +29,7 @@ export async function getMonthlyExpenseTotals(
   const byMonth = new Map((data ?? []).map((r) => [r.month, r.total]));
 
   return Array.from({ length: count }, (_, i) => {
-    const month = format(subMonths(current, count - 1 - i), "yyyy-MM");
+    const month = format(subMonths(base, count - 1 - i), "yyyy-MM");
     return { month, total: byMonth.get(month) ?? 0 };
   });
 }

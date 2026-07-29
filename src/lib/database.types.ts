@@ -126,7 +126,7 @@ export type Database = {
     };
     Functions: {
       monthly_expense_totals: {
-        Args: { start_month: string };
+        Args: { end_month: string; start_month: string };
         Returns: {
           month: string;
           total: number;

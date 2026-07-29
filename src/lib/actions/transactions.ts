@@ -48,6 +48,7 @@ export async function createTransaction(input: TransactionInput) {
   if (error) throw new Error("거래를 저장하지 못했어요.");
 
   revalidatePath("/transactions");
+  revalidatePath("/");
 }
 
 export async function updateTransaction(input: TransactionUpdateInput) {
@@ -72,6 +73,7 @@ export async function updateTransaction(input: TransactionUpdateInput) {
   if (error || !updated) throw new Error("거래를 수정하지 못했어요.");
 
   revalidatePath("/transactions");
+  revalidatePath("/");
 }
 
 export async function deleteTransaction(input: string) {
@@ -93,4 +95,5 @@ export async function deleteTransaction(input: string) {
   if (error || !deleted) throw new Error("거래를 삭제하지 못했어요.");
 
   revalidatePath("/transactions");
+  revalidatePath("/");
 }

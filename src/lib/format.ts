@@ -41,3 +41,10 @@ export function formatDayLabel(date: string) {
 export function toDateString(date: Date) {
   return format(date, "yyyy-MM-dd");
 }
+
+/** searchParams의 month를 검증 — 형식이 어긋나면 이번 달(KST) */
+export function parseMonthParam(raw?: string) {
+  return /^\d{4}-(0[1-9]|1[0-2])$/.test(raw ?? "")
+    ? (raw as string)
+    : currentMonthKST();
+}
