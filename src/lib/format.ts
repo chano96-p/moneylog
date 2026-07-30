@@ -48,3 +48,11 @@ export function parseMonthParam(raw?: string) {
     ? (raw as string)
     : currentMonthKST();
 }
+
+/** 1,472,000 → '147만원' (도넛 중앙 축약 표기) */
+export function formatAmountShort(amount: number) {
+  if (amount >= 100_000_000)
+    return `${formatAmount(Math.floor(amount / 100_000_000))}억원`;
+  if (amount < 10_000) return `${formatAmount(amount)}원`;
+  return `${formatAmount(Math.floor(amount / 10_000))}만원`;
+}

@@ -1,5 +1,6 @@
 import { format, parse } from "date-fns";
 import { ko } from "date-fns/locale";
+import { CategoryExpenseCard } from "@/components/dashboard/category-expense-card";
 import { HeroCard } from "@/components/dashboard/hero-card";
 import { MonthNav } from "@/components/dashboard/month-nav";
 import { AddTransactionButton } from "@/components/transactions/add-transaction-button";
@@ -63,7 +64,10 @@ export default async function DashboardPage({
         monthlyTotals={monthlyTotals}
       />
 
-      {/* Step 3: 카테고리 도넛 + 최근 거래 (2열) */}
+      <div className="grid grid-cols-2 gap-5">
+        <CategoryExpenseCard transactions={monthTransactions} />
+        {/* Step 4: 최근 거래 */}
+      </div>
       {/* Step 5: 월별 추이 */}
     </div>
   );
