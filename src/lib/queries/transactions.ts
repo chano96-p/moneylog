@@ -23,7 +23,9 @@ export async function getMonthlyExpenseTotals(
     end_month: endMonth,
   });
 
-  if (error) throw new Error("월별 지출을 불러오지 못했어요.");
+  if (error) {
+    throw new Error("월별 지출을 불러오지 못했어요.", { cause: error });
+  }
 
   // SQL은 거래가 있는 달만 돌려줌(희소) → 빈 달을 0으로 채움(조밀)
   const byMonth = new Map((data ?? []).map((r) => [r.month, r.total]));
@@ -49,7 +51,9 @@ export async function getTransactionsByMonth(month: string) {
     .order("date", { ascending: false })
     .order("created_at", { ascending: false });
 
-  if (error) throw new Error("거래 내역을 불러오지 못했어요.");
+  if (error) {
+    throw new Error("거래 내역을 불러오지 못했어요.", { cause: error });
+  }
 
   return (data ?? []) as TransactionWithCategory[];
 }

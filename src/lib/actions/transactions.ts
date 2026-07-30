@@ -45,7 +45,9 @@ export async function createTransaction(input: TransactionInput) {
     .from("transactions")
     .insert({ ...data, user_id: user.id });
 
-  if (error) throw new Error("거래를 저장하지 못했어요.");
+  if (error) {
+    throw new Error("거래를 저장하지 못했어요.", { cause: error });
+  }
 
   revalidatePath("/transactions");
   revalidatePath("/");
@@ -70,7 +72,9 @@ export async function updateTransaction(input: TransactionUpdateInput) {
     .select("id")
     .maybeSingle();
 
-  if (error || !updated) throw new Error("거래를 수정하지 못했어요.");
+  if (error || !updated) {
+    throw new Error("거래를 수정하지 못했어요.", { cause: error });
+  }
 
   revalidatePath("/transactions");
   revalidatePath("/");
@@ -92,7 +96,9 @@ export async function deleteTransaction(input: string) {
     .select("id")
     .maybeSingle();
 
-  if (error || !deleted) throw new Error("거래를 삭제하지 못했어요.");
+  if (error || !deleted) {
+    throw new Error("거래를 삭제하지 못했어요.", { cause: error });
+  }
 
   revalidatePath("/transactions");
   revalidatePath("/");

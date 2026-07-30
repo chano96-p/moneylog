@@ -107,7 +107,7 @@ export function CategoryExpenseCard({
         </div>
       ) : (
         <>
-          <div className="mt-4.5 flex items-center gap-5.5">
+          <div className="mt-4.5 mb-4.5 flex items-center gap-5.5">
             {/* 도넛 + 중앙 라벨 */}
             <div className="relative size-35 shrink-0">
               <CategoryDonut data={slices} />
@@ -122,7 +122,7 @@ export function CategoryExpenseCard({
             </div>
 
             {/* 범례 */}
-            <ul className="flex flex-1 flex-col gap-2.75">
+            <ul className="flex min-w-0 flex-1 flex-col gap-2.75">
               {slices.map((slice, i) => (
                 <li key={slice.id} className="flex items-center gap-2">
                   <span
@@ -132,10 +132,10 @@ export function CategoryExpenseCard({
                   <span className="min-w-0 flex-1 truncate text-[13px] font-semibold text-gray-700">
                     {slice.name}
                   </span>
-                  <span className="text-[13px] font-bold text-foreground tabular-nums">
+                  <span className="shrink-0 text-[13px] font-bold text-foreground tabular-nums">
                     {formatAmount(slice.value)}
                   </span>
-                  <span className="w-8.5 text-right text-[13px] text-muted-foreground tabular-nums">
+                  <span className="w-8.5 shrink-0 text-right text-[13px] text-muted-foreground tabular-nums">
                     {percents[i]}%
                   </span>
                 </li>

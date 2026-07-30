@@ -17,7 +17,11 @@ type SignupInput = {
 export async function login({ email, password }: LoginInput) {
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) throw new Error("이메일 또는 비밀번호가 올바르지 않아요.");
+  if (error) {
+    throw new Error("이메일 또는 비밀번호가 올바르지 않아요.", {
+      cause: error,
+    });
+  }
 }
 
 export async function signup({ name, email, password }: SignupInput) {

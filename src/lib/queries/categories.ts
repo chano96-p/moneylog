@@ -9,7 +9,9 @@ export async function getCategories() {
     .select("*")
     .order("created_at");
 
-  if (error) throw new Error("카테고리를 불러오지 못했어요.");
+  if (error) {
+    throw new Error("카테고리를 불러오지 못했어요.", { cause: error });
+  }
 
   return (data ?? []) as Category[];
 }
