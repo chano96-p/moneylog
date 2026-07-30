@@ -2,22 +2,22 @@
 
 import { addMonths, format, parse, subMonths } from "date-fns";
 import { ko } from "date-fns/locale";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Icon } from "@/components/common/icon";
+import { useSearchParamUpdater } from "@/hooks/use-search-param-updater";
 import { currentMonthKST } from "@/lib/format";
 
-export function MonthNav({ month }: { month: string }) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
+type MonthNavProps = {
+  month: string;
+  maxMonth?: string;
+};
 
+export function MonthNav({ month, maxMonth }: MonthNavProps) {
+  const setParam = useSearchParamUpdater();
   const current = parse(month, "yyyy-MM", new Date());
-  const canGoNext = month < currentMonthKST();
+  const canGoNext = month < (maxMonth ?? currentMonthKST());
 
   function move(next: Date) {
-    const params = new URLSearchParams(searchParams);
-    params.set("month", format(next, "yyyy-MM"));
-    router.replace(`${pathname}?${params}`, { scroll: false });
+    setParam("month", format(next, "yyyy-MM"));
   }
 
   const navBtn =

@@ -1,8 +1,8 @@
 import { format, parse } from "date-fns";
 import { ko } from "date-fns/locale";
+import { MonthNav } from "@/components/common/month-nav";
 import { CategoryExpenseCard } from "@/components/dashboard/category-expense-card";
 import { HeroCard } from "@/components/dashboard/hero-card";
-import { MonthNav } from "@/components/dashboard/month-nav";
 import { MonthlyTrendCard } from "@/components/dashboard/monthly-trend-card";
 import { RecentTransactionsCard } from "@/components/dashboard/recent-transactions-card";
 import { AddTransactionButton } from "@/components/transactions/add-transaction-button";

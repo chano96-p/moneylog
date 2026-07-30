@@ -1,4 +1,4 @@
-import { format, isToday, isYesterday, parse } from "date-fns";
+import { addMonths, format, isToday, isYesterday, parse } from "date-fns";
 import { ko } from "date-fns/locale";
 
 /** 이 앱의 '오늘'은 항상 KST 기준이다 (서버/클라이언트 무관) */
@@ -55,4 +55,12 @@ export function formatAmountShort(amount: number) {
     return `${formatAmount(Math.floor(amount / 100_000_000))}억원`;
   if (amount < 10_000) return `${formatAmount(amount)}원`;
   return `${formatAmount(Math.floor(amount / 10_000))}만원`;
+}
+
+/** 예산 선설정 상한: 이번 달 + N개월 */
+export function monthAfterKST(count: number) {
+  return format(
+    addMonths(parse(currentMonthKST(), "yyyy-MM", new Date()), count),
+    "yyyy-MM",
+  );
 }

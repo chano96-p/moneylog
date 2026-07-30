@@ -2,7 +2,6 @@
 
 import { format, parse, subMonths } from "date-fns";
 import { ko } from "date-fns/locale";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   Select,
   SelectContent,
@@ -10,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useSearchParamUpdater } from "@/hooks/use-search-param-updater";
 import { parseDate, todayKST } from "@/lib/format";
 
 function recentMonths(count: number) {
@@ -24,9 +24,7 @@ function recentMonths(count: number) {
 }
 
 export function MonthSelect({ month }: { month: string }) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
+  const setParam = useSearchParamUpdater();
   const months = recentMonths(12);
 
   if (!months.some((m) => m.value === month)) {
@@ -38,14 +36,8 @@ export function MonthSelect({ month }: { month: string }) {
     });
   }
 
-  function select(value: string) {
-    const params = new URLSearchParams(searchParams);
-    params.set("month", value);
-    router.replace(`${pathname}?${params}`, { scroll: false });
-  }
-
   return (
-    <Select value={month} onValueChange={select}>
+    <Select value={month} onValueChange={(v) => setParam("month", v)}>
       <SelectTrigger className="h-8.5 w-auto cursor-pointer gap-1.5 rounded-[10px] border-0 bg-white px-3.5 text-[13px] font-semibold text-gray-700 shadow-control">
         <SelectValue />
       </SelectTrigger>
