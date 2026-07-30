@@ -3,6 +3,7 @@ import { ko } from "date-fns/locale";
 import { CategoryExpenseCard } from "@/components/dashboard/category-expense-card";
 import { HeroCard } from "@/components/dashboard/hero-card";
 import { MonthNav } from "@/components/dashboard/month-nav";
+import { MonthlyTrendCard } from "@/components/dashboard/monthly-trend-card";
 import { RecentTransactionsCard } from "@/components/dashboard/recent-transactions-card";
 import { AddTransactionButton } from "@/components/transactions/add-transaction-button";
 import { parseMonthParam } from "@/lib/format";
@@ -69,7 +70,8 @@ export default async function DashboardPage({
         <CategoryExpenseCard transactions={monthTransactions} />
         <RecentTransactionsCard transactions={monthTransactions} />
       </div>
-      {/* Step 5: 월별 추이 */}
+
+      <MonthlyTrendCard totals={monthlyTotals} />
     </div>
   );
 }
