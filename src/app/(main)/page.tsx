@@ -45,7 +45,7 @@ export default async function DashboardPage({
   return (
     <div className="space-y-5">
       {/* 헤더 */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-start justify-between">
         <div>
           <h1 className="text-[22px] font-extrabold text-foreground">
             안녕하세요, {name}님 👋

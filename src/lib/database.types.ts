@@ -17,7 +17,7 @@ export type Database = {
       budgets: {
         Row: {
           amount: number;
-          category_id: string | null;
+          category_id: string;
           created_at: string;
           id: string;
           month: string;
@@ -25,7 +25,7 @@ export type Database = {
         };
         Insert: {
           amount: number;
-          category_id?: string | null;
+          category_id: string;
           created_at?: string;
           id?: string;
           month: string;
@@ -33,7 +33,7 @@ export type Database = {
         };
         Update: {
           amount?: number;
-          category_id?: string | null;
+          category_id?: string;
           created_at?: string;
           id?: string;
           month?: string;

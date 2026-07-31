@@ -1,7 +1,7 @@
+import { AddCategoryButton } from "@/components/categories/add-category-button";
 import { CategoryCard } from "@/components/categories/category-card";
 import { CategoryTypeTabs } from "@/components/categories/category-type-tabs";
 import { EmptyState } from "@/components/common/empty-state";
-import { Icon } from "@/components/common/icon";
 import { MonthNav } from "@/components/common/month-nav";
 import { monthAfterKST, parseMonthParam } from "@/lib/format";
 import { getBudgetsByMonth } from "@/lib/queries/budgets";
@@ -39,9 +39,7 @@ export default async function CategoriesPage({
   }
 
   const budgetByCategory = new Map(
-    budgets
-      .filter((b) => b.category_id !== null)
-      .map((b) => [b.category_id as string, b.amount] as const),
+    budgets.map((b) => [b.category_id, b.amount] as const),
   );
 
   const counts = {
@@ -63,16 +61,9 @@ export default async function CategoriesPage({
           </p>
         </div>
 
-        {/* Step 2에서 모달 연결 */}
         <div className="flex items-center gap-2.5">
           <MonthNav month={month} maxMonth={monthAfterKST(12)} />
-          <button
-            type="button"
-            className="flex cursor-pointer items-center gap-1.5 rounded-[12px] bg-primary px-4 py-2.5 text-[14px] font-bold text-primary-foreground"
-          >
-            <Icon name="add" size={18} />
-            카테고리 추가
-          </button>
+          <AddCategoryButton type={type} month={month} />
         </div>
       </div>
 
