@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import z from "zod";
 import {
   type CategoryInput,
   type CategoryUpdateInput,
@@ -110,5 +111,30 @@ export async function updateCategory(input: CategoryUpdateInput) {
   }
 
   await saveBudget(supabase, user.id, id, month, budget);
+  revalidateAll();
+}
+
+export async function deleteCategory(input: string) {
+  const parsed = z.string().uuid().safeParse(input);
+  if (!parsed.success) throw new Error("올바르지 않은 카테고리예요.");
+  const id = parsed.data;
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("로그인이 필요해요.");
+
+  const { data, error } = await supabase
+    .from("categories")
+    .delete()
+    .eq("id", id)
+    .select("id")
+    .maybeSingle();
+
+  if (error || !data) {
+    throw new Error("카테고리를 삭제하지 못했어요.", { cause: error });
+  }
+
   revalidateAll();
 }

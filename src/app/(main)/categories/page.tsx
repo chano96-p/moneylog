@@ -5,7 +5,10 @@ import { EmptyState } from "@/components/common/empty-state";
 import { MonthNav } from "@/components/common/month-nav";
 import { monthAfterKST, parseMonthParam } from "@/lib/format";
 import { getBudgetsByMonth } from "@/lib/queries/budgets";
-import { getCategories } from "@/lib/queries/categories";
+import {
+  getCategories,
+  getTransactionCountByCategory,
+} from "@/lib/queries/categories";
 import { getTransactionsByMonth } from "@/lib/queries/transactions";
 import type { TransactionType } from "@/lib/types";
 
@@ -23,6 +26,9 @@ export default async function CategoriesPage({
     getTransactionsByMonth(month),
     getBudgetsByMonth(month),
   ]);
+  const txCounts = await getTransactionCountByCategory(
+    categories.map((c) => c.id),
+  );
 
   // 카테고리별 합계: 한 달치 거래는 유계라 SQL 집계 대신 JS
   // (12개월 추이와 달리 데이터가 선형 증가하지 않음)
@@ -85,6 +91,8 @@ export default async function CategoriesPage({
               category={c}
               monthTotal={spentByCategory.get(c.id) ?? 0}
               budget={budgetByCategory.get(c.id) ?? null}
+              month={month}
+              transactionCount={txCounts.get(c.id) ?? 0}
             />
           ))}
         </div>

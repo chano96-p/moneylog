@@ -1,3 +1,4 @@
+import { CategoryMenu } from "@/components/categories/category-menu";
 import { Icon } from "@/components/common/icon";
 import { formatAmount } from "@/lib/format";
 import type { Category } from "@/lib/types";
@@ -6,12 +7,16 @@ type CategoryCardProps = {
   category: Category;
   monthTotal: number;
   budget: number | null;
+  month: string;
+  transactionCount: number;
 };
 
 export function CategoryCard({
   category,
   monthTotal,
   budget,
+  month,
+  transactionCount,
 }: CategoryCardProps) {
   const isExpense = category.type === "expense";
   const ratio = budget && budget > 0 ? monthTotal / budget : null;
@@ -30,14 +35,12 @@ export function CategoryCard({
           <Icon name={category.icon} size={24} color={category.color} />
         </div>
 
-        {/* Step 3에서 메뉴 연결 */}
-        <button
-          type="button"
-          aria-label={`${category.name} 메뉴`}
-          className="flex cursor-pointer items-center justify-center px-1.5 py-1 text-gray-300 hover:text-gray-500"
-        >
-          <Icon name="more_horiz" size={20} color="currentColor" />
-        </button>
+        <CategoryMenu
+          category={category}
+          month={month}
+          budget={budget}
+          transactionCount={transactionCount}
+        />
       </div>
 
       <p className="pt-3 text-[16px] font-bold text-foreground">
