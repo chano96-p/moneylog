@@ -27,6 +27,9 @@ import type {
 } from "@/lib/types";
 import { DateField } from "../common/date-field";
 import { Icon } from "../common/icon";
+import { CategoryPickerModal } from "./category-picker-modal";
+
+const VISIBLE_CHIPS = 3;
 
 type TransactionFormModalProps = {
   categories: Category[];
@@ -55,8 +58,19 @@ export function TransactionFormModal({
   );
   const [date, setDate] = useState(transaction?.date ?? todayKST());
   const [memo, setMemo] = useState(transaction?.memo ?? "");
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   const visibleCategories = categories.filter((c) => c.type === type);
+
+  const selected = visibleCategories.find((c) => c.id === categoryId);
+  const chips = (() => {
+    const head = visibleCategories.slice(0, VISIBLE_CHIPS);
+    if (selected && !head.some((c) => c.id === selected.id)) {
+      return [selected, ...head.slice(0, VISIBLE_CHIPS - 1)];
+    }
+    return head;
+  })();
+  const hasMore = visibleCategories.length > chips.length;
 
   async function handleSubmit() {
     const base = {
@@ -194,8 +208,8 @@ export function TransactionFormModal({
           <div className="flex flex-col gap-2">
             <p className="text-[13px] font-bold text-gray-700">카테고리</p>
             <div className="flex flex-wrap gap-2">
-              {visibleCategories.map((c) => {
-                const selected = categoryId === c.id;
+              {chips.map((c) => {
+                const isSelected = categoryId === c.id;
                 return (
                   <button
                     key={c.id}
@@ -203,14 +217,14 @@ export function TransactionFormModal({
                     onClick={() => setCategoryId(c.id)}
                     className="flex cursor-pointer items-center gap-1.5 rounded-md px-3.5 py-2.25 text-[13px] transition"
                     style={
-                      selected
+                      isSelected
                         ? {
                             backgroundColor: `color-mix(in srgb, ${c.color} 10%, transparent)`,
                             color: c.color,
                             fontWeight: 700,
                           }
                         : {
-                            backgroundColor: "var(--gray-100)",
+                            backgroundColor: "var(--gray-50)",
                             color: "var(--gray-500)",
                             fontWeight: 600,
                           }
@@ -219,13 +233,32 @@ export function TransactionFormModal({
                     <Icon
                       name={c.icon}
                       size={17}
-                      color={selected ? c.color : "var(--gray-500)"}
+                      color={isSelected ? c.color : "var(--gray-500)"}
                     />
                     {c.name}
                   </button>
                 );
               })}
+
+              {hasMore && (
+                <button
+                  type="button"
+                  aria-label="카테고리 더 보기"
+                  onClick={() => setPickerOpen(true)}
+                  className="flex cursor-pointer items-center rounded-md bg-gray-50 px-3.5 py-2.25 text-gray-500 transition hover:bg-secondary"
+                >
+                  <Icon name="more_horiz" size={17} color="currentColor" />
+                </button>
+              )}
             </div>
+
+            <CategoryPickerModal
+              open={pickerOpen}
+              onOpenChange={setPickerOpen}
+              categories={visibleCategories}
+              selectedId={categoryId}
+              onSelect={setCategoryId}
+            />
           </div>
 
           {/* 날짜 */}

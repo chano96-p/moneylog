@@ -7,6 +7,7 @@ import { MonthlyTrendCard } from "@/components/dashboard/monthly-trend-card";
 import { RecentTransactionsCard } from "@/components/dashboard/recent-transactions-card";
 import { AddTransactionButton } from "@/components/transactions/add-transaction-button";
 import { parseMonthParam } from "@/lib/format";
+import { getBudgetsByMonth } from "@/lib/queries/budgets";
 import { getCategories } from "@/lib/queries/categories";
 import {
   getMonthlyExpenseTotals,
@@ -30,17 +31,21 @@ export default async function DashboardPage({
     monthTransactions,
     monthlyTotals,
     categories,
+    budgets,
   ] = await Promise.all([
     supabase.auth.getUser(),
     getTransactionsByMonth(month),
     getMonthlyExpenseTotals(12, month),
     getCategories(),
+    getBudgetsByMonth(month),
   ]);
 
   const name = (user?.user_metadata.name as string | undefined) ?? "회원";
   const monthLabel = format(parse(month, "yyyy-MM", new Date()), "M월", {
     locale: ko,
   });
+
+  const totalBudget = budgets.reduce((sum, b) => sum + b.amount, 0);
 
   return (
     <div className="space-y-5">
@@ -64,6 +69,7 @@ export default async function DashboardPage({
         month={month}
         transactions={monthTransactions}
         monthlyTotals={monthlyTotals}
+        budget={totalBudget}
       />
 
       <div className="grid grid-cols-2 gap-5">

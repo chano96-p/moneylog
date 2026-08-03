@@ -8,12 +8,14 @@ type HeroCardProps = {
   month: string; // 'YYYY-MM'
   transactions: TransactionWithCategory[]; // 해당 월 전체
   monthlyTotals: MonthlyTotal[]; // 전월 비교용
+  budget: number; // 해당 월 예산 총합
 };
 
 export function HeroCard({
   month,
   transactions,
   monthlyTotals,
+  budget,
 }: HeroCardProps) {
   const income = transactions
     .filter((tx) => tx.type === "income")
@@ -30,6 +32,9 @@ export function HeroCard({
   );
   const prevExpense = monthlyTotals.find((m) => m.month === prevMonth)?.total;
   const diff = prevExpense ? expense - prevExpense : null;
+
+  const ratio = budget > 0 ? expense / budget : null;
+  const remaining = budget - expense;
 
   return (
     <section className="rounded-2xl bg-card p-7 shadow-card">
@@ -62,7 +67,32 @@ export function HeroCard({
         </div>
       </div>
 
-      {/* 예산 진행: Phase 4에서 budgets 연결 후 추가 */}
+      {/* 예산 진행 — 미설정이면 렌더 안 함 */}
+      {ratio !== null && (
+        <div className="mt-6">
+          <div className="flex items-center justify-between pb-2">
+            <p className="text-[13px] font-semibold text-gray-700">
+              예산 {formatAmount(budget)}원 중 {Math.round(ratio * 100)}% 사용
+            </p>
+            <p
+              className={`text-[13px] font-semibold ${
+                remaining < 0 ? "text-expense" : "text-primary"
+              }`}
+            >
+              {remaining < 0
+                ? `예산 초과 ${formatAmount(-remaining)}원`
+                : `남은 예산 ${formatAmount(remaining)}원`}
+            </p>
+          </div>
+
+          <div className="h-2.5 w-full overflow-hidden rounded-full bg-gray-100">
+            <div
+              className={`h-full rounded-full ${remaining < 0 ? "bg-expense" : "bg-primary"}`}
+              style={{ width: `${Math.min(ratio, 1) * 100}%` }}
+            />
+          </div>
+        </div>
+      )}
     </section>
   );
 }
