@@ -55,3 +55,11 @@ export const categoryUpdateSchema = categoryInputSchema
   .extend({ id: z.string().uuid() });
 
 export type CategoryUpdateInput = z.infer<typeof categoryUpdateSchema>;
+
+export const passwordChangeSchema = z.object({
+  currentPassword: z.string().min(1, "현재 비밀번호를 입력해 주세요."),
+  newPassword: z
+    .string()
+    .min(8, "비밀번호는 8자 이상이어야 해요.")
+    .max(72, "비밀번호가 너무 길어요."),
+});
