@@ -53,8 +53,9 @@ export function parseMonthParam(raw?: string) {
 export function formatAmountShort(amount: number) {
   if (amount >= 100_000_000)
     return `${formatAmount(Math.floor(amount / 100_000_000))}억원`;
-  if (amount < 10_000) return `${formatAmount(amount)}원`;
-  return `${formatAmount(Math.floor(amount / 10_000))}만원`;
+  if (amount >= 100_000)
+    return `${formatAmount(Math.floor(amount / 10_000))}만원`;
+  return `${formatAmount(amount)}원`;
 }
 
 /** 예산 선설정 상한: 이번 달 + N개월 */

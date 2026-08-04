@@ -10,7 +10,7 @@ const NAV_ITEMS = [
   { href: "/transactions", label: "거래 내역", icon: "receipt_long" },
   { href: "/reports", label: "리포트", icon: "monitoring" },
   { href: "/categories", label: "카테고리", icon: "category" },
-  { href: "/budget", label: "예산", icon: "savings" },
+  { href: "/budgets", label: "예산", icon: "savings" },
   { href: "/settings", label: "설정", icon: "settings" },
 ];
 

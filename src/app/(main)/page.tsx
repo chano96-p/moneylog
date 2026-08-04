@@ -10,7 +10,7 @@ import { parseMonthParam } from "@/lib/format";
 import { getBudgetsByMonth } from "@/lib/queries/budgets";
 import { getCategories } from "@/lib/queries/categories";
 import {
-  getMonthlyExpenseTotals,
+  getMonthlyTotals,
   getTransactionsByMonth,
 } from "@/lib/queries/transactions";
 import { createClient } from "@/lib/supabase/server";
@@ -35,7 +35,7 @@ export default async function DashboardPage({
   ] = await Promise.all([
     supabase.auth.getUser(),
     getTransactionsByMonth(month),
-    getMonthlyExpenseTotals(12, month),
+    getMonthlyTotals({ count: 12, baseMonth: month }),
     getCategories(),
     getBudgetsByMonth(month),
   ]);

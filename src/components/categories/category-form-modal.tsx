@@ -46,13 +46,15 @@ export function CategoryFormModal({
     currentBudget ? String(currentBudget) : "",
   );
 
+  const effectiveType = category?.type ?? type;
+
   async function handleSubmit() {
     const base = {
       name,
       icon,
       color,
       month,
-      budget: budget ? Number(budget) : null,
+      budget: effectiveType === "expense" && budget ? Number(budget) : null,
     };
 
     setPending(true);
@@ -193,28 +195,30 @@ export function CategoryFormModal({
           </div>
 
           {/* 월 예산 */}
-          <div className="flex flex-col gap-2">
-            <label
-              htmlFor="cat-budget"
-              className="text-[13px] font-bold text-gray-700"
-            >
-              월 예산 (선택)
-            </label>
-            <input
-              id="cat-budget"
-              inputMode="numeric"
-              value={budget ? formatAmount(Number(budget)) : ""}
-              onChange={(e) =>
-                setBudget(
-                  e.target.value
-                    .replace(/[^\d]/g, "")
-                    .slice(0, String(MAX_TRANSACTION_AMOUNT).length),
-                )
-              }
-              placeholder="600,000원"
-              className={`${FIELD} tabular-nums`}
-            />
-          </div>
+          {effectiveType === "expense" && (
+            <div className="flex flex-col gap-2">
+              <label
+                htmlFor="cat-budget"
+                className="text-[13px] font-bold text-gray-700"
+              >
+                월 예산 (선택)
+              </label>
+              <input
+                id="cat-budget"
+                inputMode="numeric"
+                value={budget ? formatAmount(Number(budget)) : ""}
+                onChange={(e) =>
+                  setBudget(
+                    e.target.value
+                      .replace(/[^\d]/g, "")
+                      .slice(0, String(MAX_TRANSACTION_AMOUNT).length),
+                  )
+                }
+                placeholder="600,000원"
+                className={`${FIELD} tabular-nums`}
+              />
+            </div>
+          )}
         </div>
 
         <button

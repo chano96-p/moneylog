@@ -1,26 +1,35 @@
 import { endOfMonth, format, parse, subMonths } from "date-fns";
 import { currentMonthKST, toDateString } from "../format";
 import { createClient } from "../supabase/server";
-import type { TransactionWithCategory } from "../types";
+import type { TransactionType, TransactionWithCategory } from "../types";
 
 const SELECT_WITH_CATEGORY = "*, category:categories(name, icon, color)";
 
-export type MonthlyTotal = { month: string; total: number };
+export type MonthlyTotal = {
+  month: string;
+  total: number;
+};
 
 /** 최근 N개월 지출 합계 — 빈 달은 0으로 채워 항상 N개를 반환 */
-export async function getMonthlyExpenseTotals(
+export async function getMonthlyTotals({
   count = 12,
-  baseMonth?: string,
-): Promise<MonthlyTotal[]> {
+  baseMonth,
+  type = "expense",
+}: {
+  count?: number;
+  baseMonth?: string;
+  type?: TransactionType;
+} = {}): Promise<MonthlyTotal[]> {
   const base = parse(baseMonth ?? currentMonthKST(), "yyyy-MM", new Date());
   const startMonth = format(subMonths(base, count - 1), "yyyy-MM");
   const endMonth = format(base, "yyyy-MM");
 
   const supabase = await createClient();
 
-  const { data, error } = await supabase.rpc("monthly_expense_totals", {
+  const { data, error } = await supabase.rpc("monthly_totals", {
     start_month: startMonth,
     end_month: endMonth,
+    txn_type: type,
   });
 
   if (error) {

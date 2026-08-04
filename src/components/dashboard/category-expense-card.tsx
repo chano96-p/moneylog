@@ -1,15 +1,13 @@
 import Link from "next/link";
 import { Icon } from "@/components/common/icon";
+import { type CategoryTotal, totalsByCategory } from "@/lib/aggregate";
 import { formatAmount, formatAmountShort } from "@/lib/format";
 import type { TransactionWithCategory } from "@/lib/types";
 import { CategoryDonut, type DonutSlice } from "./category-donut";
 
-const FALLBACK = {
-  name: "미분류",
-  color: "var(--gray-500)",
-  icon: "help",
-};
 const MAX_SLICES = 6;
+
+type Slice = DonutSlice & { icon: string };
 
 /** 합이 정확히 100이 되도록 배분 (최대잔차법) */
 function toPercents(values: number[], total: number) {
@@ -32,32 +30,20 @@ function toPercents(values: number[], total: number) {
   return result;
 }
 
-function aggregate(transactions: TransactionWithCategory[]) {
-  const map = new Map<string, DonutSlice & { icon: string }>();
+/** 상위 5개 + 나머지를 '기타'로 합침 */
+function toSlices(totals: CategoryTotal[]): Slice[] {
+  const slices = totals.map((t) => ({
+    id: t.id,
+    name: t.name,
+    color: t.color,
+    icon: t.icon,
+    value: t.total, // ← total → value 이름만 맞춤
+  }));
 
-  for (const tx of transactions) {
-    if (tx.type !== "expense") continue;
-    const key = tx.category_id ?? "none";
-    const prev = map.get(key);
-    if (prev) {
-      prev.value += tx.amount;
-    } else {
-      map.set(key, {
-        id: key,
-        name: tx.category?.name ?? FALLBACK.name,
-        color: tx.category?.color ?? FALLBACK.color,
-        icon: tx.category?.icon ?? FALLBACK.icon,
-        value: tx.amount,
-      });
-    }
-  }
+  if (slices.length <= MAX_SLICES) return slices;
 
-  const sorted = [...map.values()].sort((a, b) => b.value - a.value);
-  if (sorted.length <= MAX_SLICES) return sorted;
-
-  // 상위 5개 + 나머지를 '기타'로 합침
-  const top = sorted.slice(0, MAX_SLICES - 1);
-  const rest = sorted.slice(MAX_SLICES - 1);
+  const top = slices.slice(0, MAX_SLICES - 1);
+  const rest = slices.slice(MAX_SLICES - 1);
   return [
     ...top,
     {
@@ -75,7 +61,7 @@ export function CategoryExpenseCard({
 }: {
   transactions: TransactionWithCategory[];
 }) {
-  const slices = aggregate(transactions);
+  const slices = toSlices(totalsByCategory(transactions, "expense"));
   const total = slices.reduce((sum, s) => sum + s.value, 0);
   const percents = toPercents(
     slices.map((s) => s.value),
@@ -115,7 +101,7 @@ export function CategoryExpenseCard({
                 <span className="text-[11px] font-semibold text-muted-foreground">
                   총 지출
                 </span>
-                <span className="text-[17px] font-extrabold text-foreground tabular-nums">
+                <span className="text-[15px] font-extrabold text-foreground tabular-nums">
                   {formatAmountShort(total)}
                 </span>
               </div>

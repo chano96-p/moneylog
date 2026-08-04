@@ -125,8 +125,8 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      monthly_expense_totals: {
-        Args: { end_month: string; start_month: string };
+      monthly_totals: {
+        Args: { end_month: string; start_month: string; txn_type: string };
         Returns: {
           month: string;
           total: number;
