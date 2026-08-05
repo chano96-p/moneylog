@@ -7,7 +7,6 @@ import { IconInput } from "@/components/auth/icon-input";
 import { PasswordInput } from "@/components/auth/password-input";
 import { Icon } from "@/components/common/icon";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { login } from "@/lib/actions/auth";
 
@@ -15,7 +14,6 @@ export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [remember, setRemember] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -106,21 +104,7 @@ export default function LoginPage() {
               />
             </div>
 
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Checkbox
-                  id="remember"
-                  checked={remember}
-                  className="cursor-pointer"
-                  onCheckedChange={(v) => setRemember(!!v)}
-                />
-                <Label
-                  htmlFor="remember"
-                  className="text-[13px] cursor-pointer font-semibold text-(--gray-700)"
-                >
-                  로그인 상태 유지
-                </Label>
-              </div>
+            <div className="flex justify-end">
               <Link href="#" className="text-sm font-semibold text-primary">
                 비밀번호 찾기
               </Link>
