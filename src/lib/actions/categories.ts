@@ -14,8 +14,10 @@ const DUPLICATE = "23505";
 
 function revalidateAll() {
   revalidatePath("/");
-  revalidatePath("/categories");
   revalidatePath("/transactions");
+  revalidatePath("/categories");
+  revalidatePath("/budgets");
+  revalidatePath("/reports");
 }
 
 /** 예산 upsert — null이면 삭제 */

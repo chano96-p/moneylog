@@ -11,6 +11,14 @@ import {
 } from "../schemas";
 import { createClient } from "../supabase/server";
 
+function revalidateAll() {
+  revalidatePath("/");
+  revalidatePath("/transactions");
+  revalidatePath("/categories");
+  revalidatePath("/budgets");
+  revalidatePath("/reports");
+}
+
 // 공통: 카테고리 소유권 + type 일치 (RLS가 남의 카테고리를 걸러줌)
 async function assertValidCategory(
   supabase: SupabaseClient,
@@ -49,8 +57,7 @@ export async function createTransaction(input: TransactionInput) {
     throw new Error("거래를 저장하지 못했어요.", { cause: error });
   }
 
-  revalidatePath("/transactions");
-  revalidatePath("/");
+  revalidateAll();
 }
 
 export async function updateTransaction(input: TransactionUpdateInput) {
@@ -76,8 +83,7 @@ export async function updateTransaction(input: TransactionUpdateInput) {
     throw new Error("거래를 수정하지 못했어요.", { cause: error });
   }
 
-  revalidatePath("/transactions");
-  revalidatePath("/");
+  revalidateAll();
 }
 
 export async function deleteTransaction(input: string) {
@@ -100,6 +106,5 @@ export async function deleteTransaction(input: string) {
     throw new Error("거래를 삭제하지 못했어요.", { cause: error });
   }
 
-  revalidatePath("/transactions");
-  revalidatePath("/");
+  revalidateAll();
 }
