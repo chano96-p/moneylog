@@ -7,6 +7,7 @@ function getEnv(key: string): string {
 }
 
 export const env = {
+  NEXT_PUBLIC_SITE_URL: getEnv("NEXT_PUBLIC_SITE_URL"),
   SUPABASE_URL: getEnv("NEXT_PUBLIC_SUPABASE_URL"),
   SUPABASE_PUBLISHABLE_KEY: getEnv("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"),
 };

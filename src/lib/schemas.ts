@@ -56,10 +56,14 @@ export const categoryUpdateSchema = categoryInputSchema
 
 export type CategoryUpdateInput = z.infer<typeof categoryUpdateSchema>;
 
+export const emailSchema = z.string().email("올바른 이메일을 입력해 주세요.");
+
+export const passwordSchema = z
+  .string()
+  .min(8, "비밀번호는 8자 이상이어야 해요.")
+  .max(72, "비밀번호가 너무 길어요.");
+
 export const passwordChangeSchema = z.object({
   currentPassword: z.string().min(1, "현재 비밀번호를 입력해 주세요."),
-  newPassword: z
-    .string()
-    .min(8, "비밀번호는 8자 이상이어야 해요.")
-    .max(72, "비밀번호가 너무 길어요."),
+  newPassword: passwordSchema,
 });

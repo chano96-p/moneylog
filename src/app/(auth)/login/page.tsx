@@ -105,7 +105,10 @@ export default function LoginPage() {
             </div>
 
             <div className="flex justify-end">
-              <Link href="#" className="text-sm font-semibold text-primary">
+              <Link
+                href="/forgot-password"
+                className="text-sm font-semibold text-primary"
+              >
                 비밀번호 찾기
               </Link>
             </div>

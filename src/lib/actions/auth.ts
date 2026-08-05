@@ -1,7 +1,9 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { passwordChangeSchema } from "../schemas";
+import { env } from "../env";
+import { emailSchema, passwordChangeSchema, passwordSchema } from "../schemas";
 import { createClient } from "../supabase/server";
 
 type LoginInput = {
@@ -72,4 +74,39 @@ export async function changePassword(input: {
     }
     throw new Error("비밀번호를 변경하지 못했어요.", { cause: error });
   }
+}
+
+export async function requestPasswordReset(input: string) {
+  const parsed = emailSchema.safeParse(input);
+  if (!parsed.success) throw new Error(parsed.error.issues[0].message);
+
+  const supabase = await createClient();
+
+  const { error } = await supabase.auth.resetPasswordForEmail(parsed.data, {
+    redirectTo: `${env.NEXT_PUBLIC_SITE_URL}/auth/callback?next=/reset-password`,
+  });
+
+  // 계정 존재 여부를 노출하지 않기 위해 에러도 성공처럼 처리
+  if (error) console.error("resetPasswordForEmail:", error);
+}
+
+export async function resetPassword(input: string) {
+  const parsed = passwordSchema.safeParse(input);
+  if (!parsed.success) throw new Error(parsed.error.issues[0].message);
+
+  const cookieStore = await cookies();
+  if (!cookieStore.get("pw-recovery")) {
+    throw new Error("재설정 링크를 통해 접근해 주세요.");
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("링크가 만료되었어요. 다시 요청해 주세요.");
+
+  const { error } = await supabase.auth.updateUser({ password: parsed.data });
+  if (error) throw new Error("비밀번호를 변경하지 못했어요.", { cause: error });
+
+  cookieStore.delete("pw-recovery");
 }

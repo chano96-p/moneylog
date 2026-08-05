@@ -32,7 +32,14 @@ export async function updateSession(request: NextRequest) {
 
   const isAuthPage =
     request.nextUrl.pathname.startsWith("/login") ||
-    request.nextUrl.pathname.startsWith("/signup");
+    request.nextUrl.pathname.startsWith("/signup") ||
+    request.nextUrl.pathname.startsWith("/forgot-password");
+
+  const isPublicPath =
+    request.nextUrl.pathname === "/auth/callback" ||
+    request.nextUrl.pathname === "/reset-password";
+
+  if (isPublicPath) return supabaseResponse;
 
   // 로그인 안 했는데 앱 화면 접근 → /login으로
   if (!user && !isAuthPage) {
