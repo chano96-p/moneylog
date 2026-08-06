@@ -45,18 +45,27 @@ export async function getMonthlyTotals({
   });
 }
 
-/** month: 'YYYY-MM' */
-export async function getTransactionsByMonth(month: string) {
-  const start = parse(month, "yyyy-MM", new Date()); // 그 달 1일 (로컬)
-  const end = endOfMonth(start);
-
+/** 검색어가 있으면 전체 기간, 없으면 해당 월만 */
+export async function getTransactionsByMonth(
+  month: string,
+  search?: string,
+): Promise<TransactionWithCategory[]> {
   const supabase = await createClient();
 
-  const { data, error } = await supabase
-    .from("transactions")
-    .select(SELECT_WITH_CATEGORY)
-    .gte("date", toDateString(start))
-    .lte("date", toDateString(end))
+  let query = supabase.from("transactions").select(SELECT_WITH_CATEGORY);
+
+  if (search) {
+    // %와 _는 ilike 와일드카드 → 리터럴로 쓰려면 이스케이프
+    const escaped = search.replace(/[%_\\]/g, "\\$&");
+    query = query.ilike("memo", `%${escaped}%`).limit(101);
+  } else {
+    const start = parse(month, "yyyy-MM", new Date());
+    query = query
+      .gte("date", toDateString(start))
+      .lte("date", toDateString(endOfMonth(start)));
+  }
+
+  const { data, error } = await query
     .order("date", { ascending: false })
     .order("created_at", { ascending: false });
 
