@@ -79,6 +79,116 @@ export type Database = {
         };
         Relationships: [];
       };
+      monthly_budgets: {
+        Row: {
+          amount: number;
+          created_at: string;
+          id: string;
+          month: string;
+          user_id: string;
+        };
+        Insert: {
+          amount: number;
+          created_at?: string;
+          id?: string;
+          month: string;
+          user_id: string;
+        };
+        Update: {
+          amount?: number;
+          created_at?: string;
+          id?: string;
+          month?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      recurring_occurrences: {
+        Row: {
+          created_at: string;
+          id: string;
+          month: string;
+          rule_id: string;
+          transaction_id: string | null;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          month: string;
+          rule_id: string;
+          transaction_id?: string | null;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          month?: string;
+          rule_id?: string;
+          transaction_id?: string | null;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "recurring_occurrences_rule_id_fkey";
+            columns: ["rule_id"];
+            isOneToOne: false;
+            referencedRelation: "recurring_rules";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "recurring_occurrences_transaction_id_fkey";
+            columns: ["transaction_id"];
+            isOneToOne: false;
+            referencedRelation: "transactions";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      recurring_rules: {
+        Row: {
+          amount: number;
+          category_id: string | null;
+          created_at: string;
+          day_of_month: number;
+          id: string;
+          is_active: boolean;
+          memo: string | null;
+          type: string;
+          user_id: string;
+        };
+        Insert: {
+          amount: number;
+          category_id?: string | null;
+          created_at?: string;
+          day_of_month: number;
+          id?: string;
+          is_active?: boolean;
+          memo?: string | null;
+          type: string;
+          user_id: string;
+        };
+        Update: {
+          amount?: number;
+          category_id?: string | null;
+          created_at?: string;
+          day_of_month?: number;
+          id?: string;
+          is_active?: boolean;
+          memo?: string | null;
+          type?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "recurring_rules_category_id_fkey";
+            columns: ["category_id"];
+            isOneToOne: false;
+            referencedRelation: "categories";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       transactions: {
         Row: {
           amount: number;
@@ -87,6 +197,7 @@ export type Database = {
           date: string;
           id: string;
           memo: string | null;
+          recurring_rule_id: string | null;
           type: string;
           user_id: string;
         };
@@ -97,6 +208,7 @@ export type Database = {
           date: string;
           id?: string;
           memo?: string | null;
+          recurring_rule_id?: string | null;
           type: string;
           user_id: string;
         };
@@ -107,6 +219,7 @@ export type Database = {
           date?: string;
           id?: string;
           memo?: string | null;
+          recurring_rule_id?: string | null;
           type?: string;
           user_id?: string;
         };
@@ -118,6 +231,13 @@ export type Database = {
             referencedRelation: "categories";
             referencedColumns: ["id"];
           },
+          {
+            foreignKeyName: "transactions_recurring_rule_id_fkey";
+            columns: ["recurring_rule_id"];
+            isOneToOne: false;
+            referencedRelation: "recurring_rules";
+            referencedColumns: ["id"];
+          },
         ];
       };
     };
@@ -125,6 +245,10 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      materialize_recurring: {
+        Args: { target_month: string };
+        Returns: undefined;
+      };
       monthly_totals: {
         Args: { end_month: string; start_month: string; txn_type: string };
         Returns: {
