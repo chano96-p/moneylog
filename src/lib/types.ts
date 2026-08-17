@@ -14,6 +14,15 @@ export type Category = Omit<
 
 export type Budget = Database["public"]["Tables"]["budgets"]["Row"];
 
+export type RecurringRule = Omit<
+  Database["public"]["Tables"]["recurring_rules"]["Row"],
+  "type"
+> & { type: TransactionType };
+
 export type TransactionWithCategory = Transaction & {
+  category: Pick<Category, "name" | "icon" | "color"> | null;
+};
+
+export type RecurringRuleWithCategory = RecurringRule & {
   category: Pick<Category, "name" | "icon" | "color"> | null;
 };

@@ -37,8 +37,16 @@ export function TransactionRow({
       </div>
 
       <div className="min-w-0 flex-1">
-        <p className="truncate text-[14px] font-bold text-foreground">
+        <p className="flex items-center gap-1.5 truncate text-[14px] font-bold text-foreground">
           {title}
+          {tx.recurring_rule_id && (
+            <span
+              title="반복 거래로 자동 생성됨"
+              className="shrink-0 rounded-md bg-brand-light px-1.5 py-0.5 text-[11px] font-semibold text-primary"
+            >
+              반복
+            </span>
+          )}
         </p>
         <p className="truncate text-[12px] text-muted-foreground">{subtitle}</p>
       </div>

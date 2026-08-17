@@ -1,7 +1,5 @@
 "use server";
 
-import type { SupabaseClient } from "@supabase/supabase-js";
-import { revalidatePath } from "next/cache";
 import z from "zod";
 import {
   type TransactionInput,
@@ -10,33 +8,8 @@ import {
   transactionUpdateSchema,
 } from "../schemas";
 import { createClient } from "../supabase/server";
-import type { TransactionType } from "../types";
-
-function revalidateAll() {
-  revalidatePath("/");
-  revalidatePath("/transactions");
-  revalidatePath("/categories");
-  revalidatePath("/budgets");
-  revalidatePath("/reports");
-}
-
-// 공통: 카테고리 소유권 + type 일치 (RLS가 남의 카테고리를 걸러줌)
-async function assertValidCategory(
-  supabase: SupabaseClient,
-  categoryId: string | null,
-  type: TransactionType,
-) {
-  if (!categoryId) return;
-
-  const { data } = await supabase
-    .from("categories")
-    .select("id")
-    .eq("id", categoryId)
-    .eq("type", type)
-    .maybeSingle();
-
-  if (!data) throw new Error("올바르지 않은 카테고리예요.");
-}
+import { revalidateAll } from "./revalidate";
+import { assertValidCategory } from "./shared";
 
 export async function createTransaction(input: TransactionInput) {
   const data = transactionInputSchema.parse(input);

@@ -60,6 +60,37 @@ export const categoryUpdateSchema = categoryInputSchema
 
 export type CategoryUpdateInput = z.infer<typeof categoryUpdateSchema>;
 
+export const recurringRuleInputSchema = z.object({
+  type: z.enum(TRANSACTION_TYPES),
+  category_id: z.string().uuid().nullable(),
+  amount: z
+    .number()
+    .int()
+    .positive("금액을 입력해 주세요.")
+    .max(MAX_TRANSACTION_AMOUNT, "금액이 너무 커요."),
+  day_of_month: z
+    .number()
+    .int()
+    .min(1, "날짜를 선택해 주세요.")
+    .max(31, "날짜를 선택해 주세요."),
+  memo: z
+    .string()
+    .trim()
+    .max(100, "메모는 100자 이내로 입력해 주세요.")
+    .nullable(),
+});
+
+export type RecurringRuleInput = z.infer<typeof recurringRuleInputSchema>;
+
+export const recurringRuleUpdateSchema = recurringRuleInputSchema.extend({
+  id: z.string().uuid(),
+  is_active: z.boolean(),
+});
+
+export type RecurringRuleUpdateInput = z.infer<
+  typeof recurringRuleUpdateSchema
+>;
+
 export const emailSchema = z.string().email("올바른 이메일을 입력해 주세요.");
 
 export const passwordSchema = z

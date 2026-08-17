@@ -8,6 +8,7 @@ import { Icon } from "./icon";
 const NAV_ITEMS = [
   { href: "/", label: "홈", icon: "home" },
   { href: "/transactions", label: "거래 내역", icon: "receipt_long" },
+  { href: "/recurring", label: "반복 거래", icon: "event_repeat" },
   { href: "/reports", label: "리포트", icon: "monitoring" },
   { href: "/categories", label: "카테고리", icon: "category" },
   { href: "/budgets", label: "예산", icon: "savings" },

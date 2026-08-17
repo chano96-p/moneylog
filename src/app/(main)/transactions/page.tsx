@@ -1,4 +1,5 @@
 import { EmptyState } from "@/components/common/empty-state";
+import { RecurringFailedBanner } from "@/components/recurring/recurring-failed-banner";
 import { AddTransactionButton } from "@/components/transactions/add-transaction-button";
 import { MonthSelect } from "@/components/transactions/month-select";
 import { SummaryCards } from "@/components/transactions/summary-cards";
@@ -7,6 +8,7 @@ import { TransactionSearch } from "@/components/transactions/transaction-search"
 import { TypeTabs } from "@/components/transactions/type-tabs";
 import { parseMonthParam, parseTypeParam } from "@/lib/format";
 import { getCategories } from "@/lib/queries/categories";
+import { ensureRecurringGenerated } from "@/lib/queries/recurring";
 import { getTransactionsByMonth } from "@/lib/queries/transactions";
 import type { TransactionWithCategory } from "@/lib/types";
 
@@ -35,6 +37,9 @@ export default async function TransactionsPage({
   const type = parseTypeParam(params.type);
   const search = params.q?.trim() || undefined;
 
+  // 조회 전에 이번 달 반복 거래를 먼저 생성 (없으면 no-op)
+  const recurringOk = await ensureRecurringGenerated();
+
   const [monthTransactions, categories] = await Promise.all([
     getTransactionsByMonth(month, search),
     getCategories(),
@@ -57,6 +62,8 @@ export default async function TransactionsPage({
           <AddTransactionButton categories={categories} />
         </div>
       </div>
+
+      {!recurringOk && <RecurringFailedBanner />}
 
       {!search && <SummaryCards transactions={filtered} />}
 

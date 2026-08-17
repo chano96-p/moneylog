@@ -5,10 +5,12 @@ import { CategoryExpenseCard } from "@/components/dashboard/category-expense-car
 import { HeroCard } from "@/components/dashboard/hero-card";
 import { MonthlyTrendCard } from "@/components/dashboard/monthly-trend-card";
 import { RecentTransactionsCard } from "@/components/dashboard/recent-transactions-card";
+import { RecurringFailedBanner } from "@/components/recurring/recurring-failed-banner";
 import { AddTransactionButton } from "@/components/transactions/add-transaction-button";
 import { parseMonthParam } from "@/lib/format";
 import { getBudgetsByMonth } from "@/lib/queries/budgets";
 import { getCategories } from "@/lib/queries/categories";
+import { ensureRecurringGenerated } from "@/lib/queries/recurring";
 import {
   getMonthlyTotals,
   getTransactionsByMonth,
@@ -22,6 +24,9 @@ export default async function DashboardPage({
 }) {
   const params = await searchParams;
   const month = parseMonthParam(params.month);
+
+  // 조회 전에 이번 달 반복 거래를 먼저 생성 (없으면 no-op)
+  const recurringOk = await ensureRecurringGenerated();
 
   const supabase = await createClient();
   const [
@@ -64,6 +69,8 @@ export default async function DashboardPage({
           <AddTransactionButton categories={categories} />
         </div>
       </div>
+
+      {!recurringOk && <RecurringFailedBanner />}
 
       <HeroCard
         month={month}

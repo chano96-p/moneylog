@@ -1,6 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import z from "zod";
 import {
   type CategoryInput,
@@ -9,16 +8,9 @@ import {
   categoryUpdateSchema,
 } from "@/lib/schemas";
 import { createClient } from "@/lib/supabase/server";
+import { revalidateAll } from "./revalidate";
 
 const DUPLICATE = "23505";
-
-function revalidateAll() {
-  revalidatePath("/");
-  revalidatePath("/transactions");
-  revalidatePath("/categories");
-  revalidatePath("/budgets");
-  revalidatePath("/reports");
-}
 
 /** 예산 upsert — null이면 삭제 */
 async function saveBudget(
