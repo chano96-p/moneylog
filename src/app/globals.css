@@ -24,11 +24,13 @@
   --gray-800: #2b3340;
   --gray-900: #191f28; /* 강조 텍스트(ink) */
 
-  /* ===== 수입 / 지출 / 경고 ===== */
+  /* ===== 수입 / 지출 / 저축 / 경고 ===== */
   --income: #1bc47d;
   --income-bg: #e7f9f0;
   --expense: #f04452;
   --expense-bg: #ffe9ec;
+  --saving: #a855f7;
+  --saving-bg: #f6ecff;
   --warning: #f4a623;
   --warning-bg: #fff6e0;
 
@@ -132,11 +134,13 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  /* --- 수입/지출/경고 (bg-income, text-expense …) --- */
+  /* --- 수입/지출/저축/경고 (bg-income, text-expense …) --- */
   --color-income: var(--income);
   --color-income-bg: var(--income-bg);
   --color-expense: var(--expense);
   --color-expense-bg: var(--expense-bg);
+  --color-saving: var(--saving);
+  --color-saving-bg: var(--saving-bg);
   --color-warning: var(--warning);
   --color-warning-bg: var(--warning-bg);
 

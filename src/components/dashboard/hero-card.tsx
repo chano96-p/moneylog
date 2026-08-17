@@ -23,7 +23,11 @@ export function HeroCard({
   const expense = transactions
     .filter((tx) => tx.type === "expense")
     .reduce((sum, tx) => sum + tx.amount, 0);
-  const balance = income - expense;
+  const saving = transactions
+    .filter((tx) => tx.type === "saving")
+    .reduce((sum, tx) => sum + tx.amount, 0);
+  // 잔액 = 이번 달 쓸 수 있는 남은 돈. 저축은 이미 묶인 돈이라 차감
+  const balance = income - expense - saving;
 
   // 전월 데이터가 0이면 비교 무의미
   const prevMonth = format(
@@ -55,10 +59,13 @@ export function HeroCard({
           {diff !== null && <CompareBadge diff={diff} />}
         </div>
 
-        {/* 우: 수입 / 잔액 */}
+        {/* 우: 수입 / 저축 / 잔액 */}
         <div className="flex gap-3.5">
           <Pill label="수입" className="text-income">
             +{formatAmount(income)}
+          </Pill>
+          <Pill label="저축" className="text-saving">
+            {formatAmount(saving)}
           </Pill>
           <Pill label="잔액" className="text-foreground">
             {balance < 0 && "-"}

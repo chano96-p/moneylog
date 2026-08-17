@@ -3,7 +3,7 @@ import { CategoryCard } from "@/components/categories/category-card";
 import { CategoryTypeTabs } from "@/components/categories/category-type-tabs";
 import { EmptyState } from "@/components/common/empty-state";
 import { MonthNav } from "@/components/common/month-nav";
-import { monthAfterKST, parseMonthParam } from "@/lib/format";
+import { monthAfterKST, parseMonthParam, parseTypeParam } from "@/lib/format";
 import { getBudgetsByMonth } from "@/lib/queries/budgets";
 import {
   getCategories,
@@ -18,7 +18,7 @@ export default async function CategoriesPage({
   searchParams: Promise<{ type?: string; month?: string }>;
 }) {
   const params = await searchParams;
-  const type: TransactionType = params.type === "income" ? "income" : "expense";
+  const type: TransactionType = parseTypeParam(params.type) ?? "expense";
   const month = parseMonthParam(params.month);
 
   const [categories, transactions, budgets] = await Promise.all([
@@ -51,6 +51,7 @@ export default async function CategoriesPage({
   const counts = {
     expense: categories.filter((c) => c.type === "expense").length,
     income: categories.filter((c) => c.type === "income").length,
+    saving: categories.filter((c) => c.type === "saving").length,
   };
 
   const visible = categories.filter((c) => c.type === type);

@@ -3,13 +3,15 @@
 import { useSearchParams } from "next/navigation";
 import { PillTab } from "@/components/common/pill-tab";
 import { useSearchParamUpdater } from "@/hooks/use-search-param-updater";
-import { TRANSACTION_TYPE_LABEL } from "@/lib/constants";
+import { TRANSACTION_TYPE_LABEL, TRANSACTION_TYPES } from "@/lib/constants";
 
 const TABS = [
   { value: "all", label: "전체" },
-  { value: "income", label: TRANSACTION_TYPE_LABEL.income },
-  { value: "expense", label: TRANSACTION_TYPE_LABEL.expense },
-] as const;
+  ...TRANSACTION_TYPES.map((t) => ({
+    value: t,
+    label: TRANSACTION_TYPE_LABEL[t],
+  })),
+];
 
 export function TypeTabs() {
   const searchParams = useSearchParams();

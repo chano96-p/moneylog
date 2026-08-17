@@ -77,6 +77,10 @@ export function CategoryCard({
             )}
           </div>
         </>
+      ) : category.type === "saving" ? (
+        <p className="pb-2 text-[13px] font-semibold text-saving tabular-nums">
+          이번 달 {formatAmount(monthTotal)}원 저축
+        </p>
       ) : (
         <p className="pb-2 text-[13px] font-semibold text-income tabular-nums">
           이번 달 +{formatAmount(monthTotal)}원

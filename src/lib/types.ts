@@ -1,6 +1,6 @@
 import type { Database } from "@/lib/database.types";
 
-export type TransactionType = "income" | "expense";
+export type TransactionType = "income" | "expense" | "saving";
 
 export type Transaction = Omit<
   Database["public"]["Tables"]["transactions"]["Row"],

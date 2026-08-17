@@ -5,12 +5,25 @@ import { CategoryRanking } from "@/components/reports/category-ranking";
 import { MonthComparison } from "@/components/reports/month-comparison";
 import { ReportTypeTabs } from "@/components/reports/report-type-tabs";
 import { totalsByCategory } from "@/lib/aggregate";
-import { formatAmount, formatAmountShort, parseMonthParam } from "@/lib/format";
+import { TRANSACTION_TYPE_LABEL } from "@/lib/constants";
+import {
+  formatAmount,
+  formatAmountShort,
+  parseMonthParam,
+  parseTypeParam,
+} from "@/lib/format";
 import {
   getMonthlyTotals,
   getTransactionsByMonth,
 } from "@/lib/queries/transactions";
 import type { TransactionType } from "@/lib/types";
+
+/** 전월 대비 증감 문구 — 지출만 "쓰다", 수입/저축은 각각 "벌다"/"모으다" */
+const DIFF_PHRASE: Record<TransactionType, { up: string; down: string }> = {
+  expense: { up: "많이 썼어요", down: "적게 썼어요" },
+  income: { up: "더 벌었어요", down: "덜 벌었어요" },
+  saving: { up: "더 모았어요", down: "덜 모았어요" },
+};
 
 export default async function ReportsPage({
   searchParams,
@@ -19,7 +32,7 @@ export default async function ReportsPage({
 }) {
   const params = await searchParams;
   const month = parseMonthParam(params.month);
-  const type: TransactionType = params.type === "income" ? "income" : "expense";
+  const type: TransactionType = parseTypeParam(params.type) ?? "expense";
 
   const prevMonth = format(
     subMonths(parse(month, "yyyy-MM", new Date()), 1),
@@ -43,9 +56,10 @@ export default async function ReportsPage({
 
   const monthLabel = format(parse(month, "yyyy-MM", new Date()), "M월");
 
-  const isIncome = type === "income";
+  // 지출만 줄어야 좋고, 수입·저축은 늘어야 좋음
+  const moreIsGood = type !== "expense";
   const isGood =
-    diffRatio !== null && (isIncome ? diffRatio > 0 : diffRatio < 0);
+    diffRatio !== null && (moreIsGood ? diffRatio > 0 : diffRatio < 0);
   const diffColor =
     diffRatio === null ? "" : isGood ? "text-income" : "text-expense";
 
@@ -63,7 +77,7 @@ export default async function ReportsPage({
         {/* 총액 */}
         <section className="flex flex-col items-center justify-center rounded-2xl bg-card p-6 shadow-card">
           <p className="text-[13px] font-semibold text-muted-foreground">
-            {monthLabel} 총 {type === "income" ? "수입" : "지출"}
+            {monthLabel} 총 {TRANSACTION_TYPE_LABEL[type]}
           </p>
           <p className="mt-6 text-[32px] font-extrabold text-foreground tabular-nums">
             {formatAmountShort(sum)}
@@ -85,13 +99,7 @@ export default async function ReportsPage({
               <span className={`font-bold ${diffColor}`}>
                 {formatAmount(Math.abs(sum - prevSum))}원
               </span>{" "}
-              {isIncome
-                ? diffRatio > 0
-                  ? "더 벌었어요"
-                  : "덜 벌었어요"
-                : diffRatio > 0
-                  ? "많이 썼어요"
-                  : "적게 썼어요"}
+              {diffRatio > 0 ? DIFF_PHRASE[type].up : DIFF_PHRASE[type].down}
             </p>
           )}
           <MonthComparison totals={monthlyTotals} />

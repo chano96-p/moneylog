@@ -155,7 +155,7 @@ export function TransactionFormModal({
           </button>
         </div>
 
-        {/* 수입/지출 세그먼트 */}
+        {/* 지출/수입/저축 세그먼트 */}
         <div className="flex w-full gap-2 rounded-[12px] bg-gray-100 p-1">
           {TRANSACTION_TYPES.map((t) => (
             <button

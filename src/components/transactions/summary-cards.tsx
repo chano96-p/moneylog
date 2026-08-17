@@ -12,7 +12,11 @@ export function SummaryCards({
   const expense = transactions
     .filter((tx) => tx.type === "expense")
     .reduce((sum, tx) => sum + tx.amount, 0);
-  const total = income - expense;
+  const saving = transactions
+    .filter((tx) => tx.type === "saving")
+    .reduce((sum, tx) => sum + tx.amount, 0);
+  // 저축은 쓸 수 있는 돈에서 빠져나간 것 → 합계에서 차감
+  const total = income - expense - saving;
 
   return (
     <div className="flex gap-3.5">
@@ -21,6 +25,9 @@ export function SummaryCards({
       </Card>
       <Card label="총 지출" className="text-foreground">
         -{formatAmount(expense)}원
+      </Card>
+      <Card label="총 저축" className="text-saving">
+        -{formatAmount(saving)}원
       </Card>
       <Card label="합계" className="text-primary">
         {total >= 0 ? "+" : "-"}

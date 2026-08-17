@@ -10,6 +10,7 @@ import {
   transactionUpdateSchema,
 } from "../schemas";
 import { createClient } from "../supabase/server";
+import type { TransactionType } from "../types";
 
 function revalidateAll() {
   revalidatePath("/");
@@ -23,7 +24,7 @@ function revalidateAll() {
 async function assertValidCategory(
   supabase: SupabaseClient,
   categoryId: string | null,
-  type: "income" | "expense",
+  type: TransactionType,
 ) {
   if (!categoryId) return;
 

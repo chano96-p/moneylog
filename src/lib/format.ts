@@ -1,5 +1,7 @@
 import { addMonths, format, isToday, isYesterday, parse } from "date-fns";
 import { ko } from "date-fns/locale";
+import { TRANSACTION_TYPES } from "./constants";
+import type { TransactionType } from "./types";
 
 /** 이 앱의 '오늘'은 항상 KST 기준이다 (서버/클라이언트 무관) */
 export function todayKST() {
@@ -47,6 +49,13 @@ export function parseMonthParam(raw?: string) {
   return /^\d{4}-(0[1-9]|1[0-2])$/.test(raw ?? "")
     ? (raw as string)
     : currentMonthKST();
+}
+
+/** URL의 type 파라미터 검증 — 유효하지 않으면 null */
+export function parseTypeParam(raw?: string): TransactionType | null {
+  return (TRANSACTION_TYPES as readonly string[]).includes(raw ?? "")
+    ? (raw as TransactionType)
+    : null;
 }
 
 /** 1,472,000 → '147만원' (도넛 중앙 축약 표기) */

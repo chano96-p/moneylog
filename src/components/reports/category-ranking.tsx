@@ -27,10 +27,11 @@ export function CategoryRanking({
 
           const percent =
             diffRatio === null ? null : Math.round(diffRatio * 100);
+          // 지출만 줄어야 좋고, 수입·저축은 늘어야 좋음
           const good =
             percent === null
               ? false
-              : type === "income"
+              : type !== "expense"
                 ? percent > 0
                 : percent < 0;
 
