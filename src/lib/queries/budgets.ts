@@ -16,3 +16,20 @@ export async function getBudgetsByMonth(month: string): Promise<Budget[]> {
 
   return data ?? [];
 }
+
+/** 월 총예산 — 미설정이면 null */
+export async function getMonthlyBudget(month: string): Promise<number | null> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("monthly_budgets")
+    .select("amount")
+    .eq("month", month)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error("총예산을 불러오지 못했어요.", { cause: error });
+  }
+
+  return data?.amount ?? null;
+}

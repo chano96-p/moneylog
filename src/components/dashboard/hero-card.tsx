@@ -8,7 +8,8 @@ type HeroCardProps = {
   month: string; // 'YYYY-MM'
   transactions: TransactionWithCategory[]; // 해당 월 전체
   monthlyTotals: MonthlyTotal[]; // 전월 비교용
-  budget: number; // 해당 월 예산 총합
+  budget: number; // 한도 (budgetUsage 결과)
+  budgetSpent: number; // 한도와 같은 범위의 사용액 (budgetUsage 결과)
 };
 
 export function HeroCard({
@@ -16,6 +17,7 @@ export function HeroCard({
   transactions,
   monthlyTotals,
   budget,
+  budgetSpent,
 }: HeroCardProps) {
   const income = transactions
     .filter((tx) => tx.type === "income")
@@ -37,8 +39,8 @@ export function HeroCard({
   const prevExpense = monthlyTotals.find((m) => m.month === prevMonth)?.total;
   const diff = prevExpense ? expense - prevExpense : null;
 
-  const ratio = budget > 0 ? expense / budget : null;
-  const remaining = budget - expense;
+  const ratio = budget > 0 ? budgetSpent / budget : null;
+  const remaining = budget - budgetSpent;
 
   return (
     <section className="rounded-2xl bg-card p-7 shadow-card">

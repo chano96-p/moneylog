@@ -7,8 +7,9 @@ import { MonthlyTrendCard } from "@/components/dashboard/monthly-trend-card";
 import { RecentTransactionsCard } from "@/components/dashboard/recent-transactions-card";
 import { RecurringFailedBanner } from "@/components/recurring/recurring-failed-banner";
 import { AddTransactionButton } from "@/components/transactions/add-transaction-button";
+import { budgetUsage } from "@/lib/aggregate";
 import { parseMonthParam } from "@/lib/format";
-import { getBudgetsByMonth } from "@/lib/queries/budgets";
+import { getBudgetsByMonth, getMonthlyBudget } from "@/lib/queries/budgets";
 import { getCategories } from "@/lib/queries/categories";
 import { ensureRecurringGenerated } from "@/lib/queries/recurring";
 import {
@@ -37,12 +38,14 @@ export default async function DashboardPage({
     monthlyTotals,
     categories,
     budgets,
+    monthlyBudget,
   ] = await Promise.all([
     supabase.auth.getUser(),
     getTransactionsByMonth(month),
     getMonthlyTotals({ count: 12, baseMonth: month }),
     getCategories(),
     getBudgetsByMonth(month),
+    getMonthlyBudget(month),
   ]);
 
   const name = (user?.user_metadata.name as string | undefined) ?? "회원";
@@ -50,7 +53,7 @@ export default async function DashboardPage({
     locale: ko,
   });
 
-  const totalBudget = budgets.reduce((sum, b) => sum + b.amount, 0);
+  const usage = budgetUsage(monthTransactions, budgets, monthlyBudget);
 
   return (
     <div className="space-y-5">
@@ -76,7 +79,8 @@ export default async function DashboardPage({
         month={month}
         transactions={monthTransactions}
         monthlyTotals={monthlyTotals}
-        budget={totalBudget}
+        budget={usage.budget}
+        budgetSpent={usage.spent}
       />
 
       <div className="grid grid-cols-2 gap-5">

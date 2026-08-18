@@ -5,6 +5,10 @@ import {
   TRANSACTION_TYPES,
 } from "./constants";
 
+export const monthSchema = z
+  .string()
+  .regex(/^\d{4}-(0[1-9]|1[0-2])$/, "월 형식이 올바르지 않아요.");
+
 // 거래 입력 스키마
 export const transactionInputSchema = z.object({
   type: z.enum(TRANSACTION_TYPES),
@@ -46,9 +50,7 @@ export const categoryInputSchema = z.object({
     .positive("예산은 1원 이상 입력해 주세요.")
     .max(MAX_TRANSACTION_AMOUNT, "예산이 너무 커요.")
     .nullable(),
-  month: z
-    .string()
-    .regex(/^\d{4}-(0[1-9]|1[0-2])$/, "월 형식이 올바르지 않아요."),
+  month: monthSchema,
 });
 
 export type CategoryInput = z.infer<typeof categoryInputSchema>;
@@ -90,6 +92,19 @@ export const recurringRuleUpdateSchema = recurringRuleInputSchema.extend({
 export type RecurringRuleUpdateInput = z.infer<
   typeof recurringRuleUpdateSchema
 >;
+
+export const monthlyBudgetSchema = z.object({
+  month: monthSchema,
+  /** null이면 해제 */
+  amount: z
+    .number()
+    .int()
+    .positive("예산은 1원 이상 입력해 주세요.")
+    .max(MAX_TRANSACTION_AMOUNT, "예산이 너무 커요.")
+    .nullable(),
+});
+
+export type MonthlyBudgetInput = z.infer<typeof monthlyBudgetSchema>;
 
 export const emailSchema = z.string().email("올바른 이메일을 입력해 주세요.");
 

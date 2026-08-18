@@ -1,9 +1,12 @@
 import { BudgetRow } from "@/components/budgets/budget-row";
 import { BudgetSummary } from "@/components/budgets/budget-summary";
+import { CopyBudgetsButton } from "@/components/budgets/copy-budgets-button";
+import { TotalBudgetButton } from "@/components/budgets/total-budget-button";
 import { EmptyState } from "@/components/common/empty-state";
 import { MonthNav } from "@/components/common/month-nav";
+import { budgetUsage } from "@/lib/aggregate";
 import { monthAfterKST, parseMonthParam } from "@/lib/format";
-import { getBudgetsByMonth } from "@/lib/queries/budgets";
+import { getBudgetsByMonth, getMonthlyBudget } from "@/lib/queries/budgets";
 import { getCategories } from "@/lib/queries/categories";
 import { getTransactionsByMonth } from "@/lib/queries/transactions";
 import type { Category } from "@/lib/types";
@@ -16,10 +19,11 @@ export default async function BudgetsPage({
   const params = await searchParams;
   const month = parseMonthParam(params.month);
 
-  const [categories, transactions, budgets] = await Promise.all([
+  const [categories, transactions, budgets, monthlyBudget] = await Promise.all([
     getCategories(),
     getTransactionsByMonth(month),
     getBudgetsByMonth(month),
+    getMonthlyBudget(month),
   ]);
 
   const spentByCategory = new Map<string, number>();
@@ -50,47 +54,59 @@ export default async function BudgetsPage({
     )
     .sort((a, b) => rate(b) - rate(a));
 
-  const totalBudget = rows.reduce((s, r) => s + r.budget, 0);
-  const totalSpent = rows.reduce((s, r) => s + r.spent, 0);
+  const categoryBudgetSum = rows.reduce((s, r) => s + r.budget, 0);
+  const usage = budgetUsage(transactions, budgets, monthlyBudget);
+  const hasAnyBudget = rows.length > 0 || monthlyBudget !== null;
 
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <h1 className="text-[22px] font-extrabold text-foreground">예산</h1>
-        <MonthNav month={month} maxMonth={monthAfterKST(12)} />
+        <div className="flex items-center gap-2.5">
+          <CopyBudgetsButton month={month} />
+          <TotalBudgetButton
+            month={month}
+            current={monthlyBudget}
+            categorySum={categoryBudgetSum}
+          />
+          <MonthNav month={month} maxMonth={monthAfterKST(12)} />
+        </div>
       </div>
 
-      {rows.length === 0 ? (
+      {!hasAnyBudget ? (
         <div className="rounded-2xl bg-card shadow-card">
           <EmptyState
             icon="savings"
             title="설정한 예산이 없어요"
-            description="카테고리 화면에서 월 예산을 설정해 보세요."
+            description="총예산을 설정하거나, 카테고리 화면에서 월 예산을 설정해 보세요."
           />
         </div>
       ) : (
         <>
           <BudgetSummary
             month={month}
-            budget={totalBudget}
-            spent={totalSpent}
+            budget={usage.budget}
+            spent={usage.spent}
+            budgetLabel={usage.isTotal ? "총예산" : "카테고리 예산 합계"}
           />
 
-          <section className="rounded-2xl bg-card p-6 shadow-card">
-            <h2 className="text-[16px] font-bold text-foreground">
-              카테고리별 예산
-            </h2>
-            <ul className="mt-1">
-              {rows.map((r) => (
-                <BudgetRow
-                  key={r.category.id}
-                  category={r.category}
-                  spent={r.spent}
-                  budget={r.budget}
-                />
-              ))}
-            </ul>
-          </section>
+          {rows.length > 0 && (
+            <section className="rounded-2xl bg-card p-6 shadow-card">
+              <h2 className="text-[16px] font-bold text-foreground">
+                카테고리별 예산
+              </h2>
+              <ul className="mt-1">
+                {rows.map((r) => (
+                  <BudgetRow
+                    key={r.category.id}
+                    category={r.category}
+                    spent={r.spent}
+                    budget={r.budget}
+                  />
+                ))}
+              </ul>
+            </section>
+          )}
         </>
       )}
     </div>

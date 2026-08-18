@@ -5,10 +5,12 @@ export function BudgetSummary({
   month,
   budget,
   spent,
+  budgetLabel,
 }: {
   month: string;
   budget: number;
   spent: number;
+  budgetLabel: string;
 }) {
   const ratio = budget > 0 ? spent / budget : 0;
   const remaining = budget - spent;
@@ -64,7 +66,7 @@ export function BudgetSummary({
         {/* 수치 3줄 */}
         <dl className="flex flex-1 flex-col gap-3.5">
           <Row
-            label={`${monthLabel} 총 예산`}
+            label={`${monthLabel} ${budgetLabel}`}
             value={`${formatAmount(budget)}원`}
           />
           <Row label="사용한 금액" value={`${formatAmount(spent)}원`} />
