@@ -1,6 +1,9 @@
+import z from "zod";
 import { EmptyState } from "@/components/common/empty-state";
 import { RecurringFailedBanner } from "@/components/recurring/recurring-failed-banner";
 import { AddTransactionButton } from "@/components/transactions/add-transaction-button";
+import { CategoryFilterChip } from "@/components/transactions/category-filter-chip";
+import { ExportMenu } from "@/components/transactions/export-menu";
 import { MonthSelect } from "@/components/transactions/month-select";
 import { SummaryCards } from "@/components/transactions/summary-cards";
 import { TransactionList } from "@/components/transactions/transaction-list";
@@ -28,7 +31,12 @@ function groupByDate(transactions: TransactionWithCategory[]) {
 export default async function TransactionsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ month?: string; type?: string; q?: string }>;
+  searchParams: Promise<{
+    month?: string;
+    type?: string;
+    q?: string;
+    category?: string;
+  }>;
 }) {
   const params = await searchParams;
 
@@ -36,14 +44,25 @@ export default async function TransactionsPage({
   const month = parseMonthParam(params.month);
   const type = parseTypeParam(params.type);
   const search = params.q?.trim() || undefined;
+  const rawCategoryId = z.string().uuid().safeParse(params.category).success
+    ? params.category
+    : undefined;
 
   // 조회 전에 이번 달 반복 거래를 먼저 생성 (없으면 no-op)
   const recurringOk = await ensureRecurringGenerated();
 
-  const [monthTransactions, categories] = await Promise.all([
-    getTransactionsByMonth(month, search),
-    getCategories(),
-  ]);
+  // 카테고리는 먼저 가져와 소유 여부를 확인 — 남의 uuid면 필터 자체를 무시
+  // (칩이 안 보이는데 목록만 비는 혼란 방지)
+  const categories = await getCategories();
+  const filterCategory = rawCategoryId
+    ? categories.find((c) => c.id === rawCategoryId)
+    : undefined;
+
+  const monthTransactions = await getTransactionsByMonth(
+    month,
+    search,
+    filterCategory?.id,
+  );
 
   const truncated = !!search && monthTransactions.length > 100;
   const shown = truncated ? monthTransactions.slice(0, 100) : monthTransactions;
@@ -59,6 +78,7 @@ export default async function TransactionsPage({
         </h1>
         <div className="flex items-center gap-2.5">
           <TransactionSearch initial={search ?? ""} />
+          <ExportMenu month={month} />
           <AddTransactionButton categories={categories} />
         </div>
       </div>
@@ -68,7 +88,10 @@ export default async function TransactionsPage({
       {!search && <SummaryCards transactions={filtered} />}
 
       <div className="flex items-center justify-between">
-        <TypeTabs />
+        <div className="flex items-center gap-2.5">
+          <TypeTabs />
+          {filterCategory && <CategoryFilterChip category={filterCategory} />}
+        </div>
         {!search && <MonthSelect month={month} />}
       </div>
 

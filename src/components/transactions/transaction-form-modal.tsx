@@ -44,7 +44,9 @@ export function TransactionFormModal({
   open,
   onOpenChange,
 }: TransactionFormModalProps) {
-  const isEdit = !!transaction;
+  // 복제: 수정 모달의 값을 유지한 채 생성 모드로 전환
+  const [duplicating, setDuplicating] = useState(false);
+  const isEdit = !!transaction && !duplicating;
 
   const [pending, setPending] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
@@ -97,7 +99,9 @@ export function TransactionFormModal({
         toast.success("거래를 수정했어요.");
       } else {
         await createTransaction(parsed.data as TransactionInput);
-        toast.success("거래를 추가했어요.");
+        toast.success(
+          duplicating ? "거래를 복제했어요." : "거래를 추가했어요.",
+        );
       }
       onOpenChange(false);
     } catch (e) {
@@ -143,16 +147,32 @@ export function TransactionFormModal({
         {/* 헤더 */}
         <div className="flex items-center justify-between">
           <DialogTitle className="text-[19px] font-extrabold text-foreground">
-            {isEdit ? "거래 수정" : "거래 추가"}
+            {isEdit ? "거래 수정" : duplicating ? "거래 복제" : "거래 추가"}
           </DialogTitle>
-          <button
-            type="button"
-            aria-label="닫기"
-            onClick={() => onOpenChange(false)}
-            className="flex size-8.5 cursor-pointer items-center justify-center rounded-[10px] bg-secondary"
-          >
-            <Icon name="close" size={20} color="var(--gray-500)" />
-          </button>
+          <div className="flex items-center gap-2">
+            {isEdit && (
+              <button
+                type="button"
+                onClick={() => {
+                  setDuplicating(true);
+                  setDate(todayKST());
+                  setConfirmingDelete(false);
+                }}
+                className="flex h-8.5 cursor-pointer items-center gap-1 rounded-[10px] bg-secondary px-3 text-[13px] font-semibold text-gray-700"
+              >
+                <Icon name="content_copy" size={16} color="currentColor" />
+                복제
+              </button>
+            )}
+            <button
+              type="button"
+              aria-label="닫기"
+              onClick={() => onOpenChange(false)}
+              className="flex size-8.5 cursor-pointer items-center justify-center rounded-[10px] bg-secondary"
+            >
+              <Icon name="close" size={20} color="var(--gray-500)" />
+            </button>
+          </div>
         </div>
 
         {/* 지출/수입/저축 세그먼트 */}

@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { CategoryFormModal } from "@/components/categories/category-form-modal";
@@ -33,6 +34,7 @@ export function CategoryMenu({
   budget: number | null;
   transactionCount: number;
 }) {
+  const router = useRouter();
   const [editing, setEditing] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const [pending, setPending] = useState(false);
@@ -66,6 +68,17 @@ export function CategoryMenu({
         </DropdownMenuTrigger>
 
         <DropdownMenuContent align="end" className="min-w-32 rounded-lg p-1.5">
+          <DropdownMenuItem
+            onSelect={() =>
+              router.push(
+                `/transactions?category=${category.id}&month=${month}`,
+              )
+            }
+            className="cursor-pointer rounded-[10px] px-2.5 py-2 text-[13px]"
+          >
+            <Icon name="receipt_long" size={16} color="var(--gray-500)" />
+            거래 내역 보기
+          </DropdownMenuItem>
           <DropdownMenuItem
             onSelect={() => setEditing(true)}
             className="cursor-pointer rounded-[10px] px-2.5 py-2 text-[13px]"

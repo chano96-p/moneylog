@@ -45,14 +45,19 @@ export async function getMonthlyTotals({
   });
 }
 
-/** 검색어가 있으면 전체 기간, 없으면 해당 월만 */
+/** 검색어가 있으면 전체 기간, 없으면 해당 월만. categoryId는 양쪽 모두에 적용 */
 export async function getTransactionsByMonth(
   month: string,
   search?: string,
+  categoryId?: string,
 ): Promise<TransactionWithCategory[]> {
   const supabase = await createClient();
 
   let query = supabase.from("transactions").select(SELECT_WITH_CATEGORY);
+
+  if (categoryId) {
+    query = query.eq("category_id", categoryId);
+  }
 
   if (search) {
     // %와 _는 ilike 와일드카드 → 리터럴로 쓰려면 이스케이프
