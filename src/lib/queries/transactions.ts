@@ -80,3 +80,34 @@ export async function getTransactionsByMonth(
 
   return (data ?? []) as TransactionWithCategory[];
 }
+
+export type CategoryTotalRow = {
+  /** null = 미분류 */
+  category_id: string | null;
+  total: number;
+};
+
+/** 기간 카테고리별 합계 — SQL 집계 (1년치 거래를 앱으로 가져오지 않기 위해) */
+export async function getCategoryTotals({
+  startMonth,
+  endMonth,
+  type,
+}: {
+  startMonth: string;
+  endMonth: string;
+  type: TransactionType;
+}): Promise<CategoryTotalRow[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase.rpc("category_totals", {
+    start_month: startMonth,
+    end_month: endMonth,
+    txn_type: type,
+  });
+
+  if (error) {
+    throw new Error("카테고리별 합계를 불러오지 못했어요.", { cause: error });
+  }
+
+  return data ?? [];
+}

@@ -51,6 +51,11 @@ export function parseMonthParam(raw?: string) {
     : currentMonthKST();
 }
 
+/** URL의 period 파라미터 검증 — 'yearly' 외에는 월간 */
+export function parsePeriodParam(raw?: string): "monthly" | "yearly" {
+  return raw === "yearly" ? "yearly" : "monthly";
+}
+
 /** URL의 type 파라미터 검증 — 유효하지 않으면 null */
 export function parseTypeParam(raw?: string): TransactionType | null {
   return (TRANSACTION_TYPES as readonly string[]).includes(raw ?? "")

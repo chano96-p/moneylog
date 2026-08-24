@@ -245,6 +245,13 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      category_totals: {
+        Args: { end_month: string; start_month: string; txn_type: string };
+        Returns: {
+          category_id: string;
+          total: number;
+        }[];
+      };
       materialize_recurring: {
         Args: { target_month: string };
         Returns: undefined;

@@ -1,3 +1,4 @@
+import type { CategoryTotalRow } from "@/lib/queries/transactions";
 import type { Budget, Category, TransactionWithCategory } from "@/lib/types";
 
 export type BudgetUsage = {
@@ -74,4 +75,23 @@ export function totalsByCategory(
   }
 
   return [...map.values()].sort((a, b) => b.total - a.total);
+}
+
+/** SQL 집계 결과(id, total)에 카테고리 정보를 조인 — null id는 미분류 */
+export function joinCategoryTotals(
+  rows: CategoryTotalRow[],
+  categories: Category[],
+): CategoryTotal[] {
+  const byId = new Map(categories.map((c) => [c.id, c] as const));
+
+  return rows.map((row) => {
+    const category = row.category_id ? byId.get(row.category_id) : undefined;
+    return {
+      id: row.category_id ?? "none",
+      name: category?.name ?? FALLBACK.name,
+      icon: category?.icon ?? FALLBACK.icon,
+      color: category?.color ?? FALLBACK.color,
+      total: row.total,
+    };
+  });
 }

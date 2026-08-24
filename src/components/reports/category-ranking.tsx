@@ -4,12 +4,14 @@ import { formatAmount } from "@/lib/format";
 import type { TransactionType } from "@/lib/types";
 
 type CategoryRankingProps = {
+  title?: string;
   totals: CategoryTotal[];
   previousTotals: Map<string, number>;
   type: TransactionType;
 };
 
 export function CategoryRanking({
+  title = "카테고리 순위",
   totals,
   previousTotals,
   type,
@@ -18,7 +20,13 @@ export function CategoryRanking({
 
   return (
     <section className="rounded-2xl bg-card p-6 shadow-card">
-      <h2 className="text-[16px] font-bold text-foreground">카테고리 순위</h2>
+      <h2 className="text-[16px] font-bold text-foreground">{title}</h2>
+
+      {totals.length === 0 && (
+        <p className="mt-4 text-[13px] text-muted-foreground">
+          아직 내역이 없어요.
+        </p>
+      )}
 
       <ul className="mt-4 flex flex-col">
         {totals.map((item, i) => {
