@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { AddCategoryButton } from "@/components/categories/add-category-button";
 import { CategoryCard } from "@/components/categories/category-card";
 import { CategoryTypeTabs } from "@/components/categories/category-type-tabs";
@@ -11,6 +12,8 @@ import {
 } from "@/lib/queries/categories";
 import { getTransactionsByMonth } from "@/lib/queries/transactions";
 import type { TransactionType } from "@/lib/types";
+
+export const metadata: Metadata = { title: "카테고리" };
 
 export default async function CategoriesPage({
   searchParams,

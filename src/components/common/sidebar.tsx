@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { signOut } from "@/lib/actions/auth";
+import { BrandMark } from "./brand-mark";
 import { Icon } from "./icon";
 
 const NAV_ITEMS = [
@@ -61,7 +62,7 @@ export function Sidebar() {
       {/* 로고 — 쿼리 없는 홈으로: 보던 월이 초기화되는 리셋 동선 */}
       <Link href="/" className="flex items-center gap-2 px-5 py-6">
         <div className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-          <Icon name="savings" filled size={20} />
+          <BrandMark size={16} />
         </div>
         <span className="text-lg font-bold text-sidebar-foreground">
           머니로그

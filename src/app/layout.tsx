@@ -11,8 +11,13 @@ const pretendard = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "머니로그",
+  title: {
+    default: "머니로그",
+    template: "%s | 머니로그",
+  },
   description: "PC 전용 개인 가계부",
+  // 개인 서비스 — 검색 엔진 노출 차단
+  robots: { index: false, follow: false },
 };
 
 export default function RootLayout({

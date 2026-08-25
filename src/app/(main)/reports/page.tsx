@@ -1,4 +1,5 @@
 import { format, parse, subMonths } from "date-fns";
+import type { Metadata } from "next";
 import { EmptyState } from "@/components/common/empty-state";
 import { MonthNav } from "@/components/common/month-nav";
 import { CategoryRanking } from "@/components/reports/category-ranking";
@@ -23,6 +24,8 @@ import {
   getTransactionsByMonth,
 } from "@/lib/queries/transactions";
 import type { TransactionType } from "@/lib/types";
+
+export const metadata: Metadata = { title: "리포트" };
 
 type PerType<T> = Record<TransactionType, T>;
 

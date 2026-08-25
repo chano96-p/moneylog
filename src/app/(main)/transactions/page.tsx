@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import z from "zod";
 import { EmptyState } from "@/components/common/empty-state";
 import { RecurringFailedBanner } from "@/components/recurring/recurring-failed-banner";
@@ -14,6 +15,8 @@ import { getCategories } from "@/lib/queries/categories";
 import { ensureRecurringGenerated } from "@/lib/queries/recurring";
 import { getTransactionsByMonth } from "@/lib/queries/transactions";
 import type { TransactionWithCategory } from "@/lib/types";
+
+export const metadata: Metadata = { title: "거래 내역" };
 
 /**
  * 거래 내역을 날짜별로 그룹화

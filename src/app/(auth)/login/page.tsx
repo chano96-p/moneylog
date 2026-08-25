@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { type FormEvent, useState } from "react";
 import { IconInput } from "@/components/auth/icon-input";
 import { PasswordInput } from "@/components/auth/password-input";
-import { Icon } from "@/components/common/icon";
+import { BrandMark } from "@/components/common/brand-mark";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { login } from "@/lib/actions/auth";
@@ -39,7 +39,7 @@ export default function LoginPage() {
         <div>
           <div className="flex items-center gap-2">
             <div className="flex size-9 items-center justify-center rounded-xl bg-white/20">
-              <Icon name="savings" filled size={22} />
+              <BrandMark size={18} />
             </div>
             <span className="text-xl font-bold">머니로그</span>
           </div>

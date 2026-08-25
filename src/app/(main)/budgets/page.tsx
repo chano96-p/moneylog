@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { BudgetRow } from "@/components/budgets/budget-row";
 import { BudgetSummary } from "@/components/budgets/budget-summary";
 import { CopyBudgetsButton } from "@/components/budgets/copy-budgets-button";
@@ -10,6 +11,8 @@ import { getBudgetsByMonth, getMonthlyBudget } from "@/lib/queries/budgets";
 import { getCategories } from "@/lib/queries/categories";
 import { getTransactionsByMonth } from "@/lib/queries/transactions";
 import type { Category } from "@/lib/types";
+
+export const metadata: Metadata = { title: "예산" };
 
 export default async function BudgetsPage({
   searchParams,

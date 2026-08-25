@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="14" fill="#3182f6"/>
+  <!-- ₩를 path로 직접 그림 — 렌더러의 폰트 환경에 의존하지 않음 -->
+  <g stroke="#ffffff" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path stroke-width="6" d="M14 17 L23 47 L32 21 L41 47 L50 17"/>
+    <path stroke-width="5" d="M11 27 H53"/>
+    <path stroke-width="5" d="M13 37 H51"/>
+  </g>
+</svg>

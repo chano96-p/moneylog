@@ -1,9 +1,12 @@
+import type { Metadata } from "next";
 import { EmptyState } from "@/components/common/empty-state";
 import { AddRecurringButton } from "@/components/recurring/add-recurring-button";
 import { RecurringRuleList } from "@/components/recurring/recurring-rule-list";
 import { formatAmount } from "@/lib/format";
 import { getCategories } from "@/lib/queries/categories";
 import { getRecurringRules } from "@/lib/queries/recurring";
+
+export const metadata: Metadata = { title: "반복 거래" };
 
 export default async function RecurringPage() {
   const [rules, categories] = await Promise.all([
