@@ -21,13 +21,16 @@ export function SummaryCards({
   return (
     <div className="flex gap-3.5">
       <Card label="총 수입" className="text-income">
-        +{formatAmount(income)}원
+        {income > 0 && "+"}
+        {formatAmount(income)}원
       </Card>
       <Card label="총 지출" className="text-foreground">
-        -{formatAmount(expense)}원
+        {expense > 0 && "-"}
+        {formatAmount(expense)}원
       </Card>
       <Card label="총 저축" className="text-saving">
-        -{formatAmount(saving)}원
+        {saving > 0 && "-"}
+        {formatAmount(saving)}원
       </Card>
       <Card label="합계" className="text-primary">
         {total >= 0 ? "+" : "-"}
